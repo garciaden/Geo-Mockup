@@ -7,10 +7,6 @@
   "mounts": [
     "source=${localWorkspaceFolder},target=/app,type=bind"
   ],
-  "containerEnv": {
-    "FLASK_ENV": "development",
-    "FLASK_DEBUG": "1"
-  },
   "customizations": {
     "vscode": {
       "settings": {
