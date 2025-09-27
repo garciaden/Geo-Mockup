@@ -1,0 +1,25 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Virtual environments
+.venv/
+env/
+venv/
+
+# VSCode
+.vscode/
+.vscode-server/
+
+# DevContainers
+.devcontainer/*log
+.devcontainer/*data
+
+# OS crap
+.DS_Store
+Thumbs.db
+
+# dotenv
+.env
+.env.*
