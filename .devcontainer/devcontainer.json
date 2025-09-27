@@ -1,0 +1,32 @@
+{
+  "name": "Flask Dev Container",
+  "dockerFile": "../Dockerfile",
+  "context": "..",
+  "appPort": ["5000:5000"],
+  "remoteUser": "devuser",
+  "mounts": [
+    "source=${localWorkspaceFolder},target=/app,type=bind"
+  ],
+  "containerEnv": {
+    "FLASK_ENV": "development",
+    "FLASK_DEBUG": "1"
+  },
+  "customizations": {
+    "vscode": {
+      "settings": {
+        "python.defaultInterpreterPath": "/usr/local/bin/python",
+        "python.testing.pytestEnabled": true,
+        "python.formatting.provider": "black",
+        "terminal.integrated.defaultProfile.linux": "bash"
+      },
+      "extensions": [
+        "ms-python.python",
+        "ms-python.vscode-pylance",
+        "ms-python.black-formatter",
+        "ms-python.debugpy"
+      ]
+    }
+  },
+  "overrideCommand": false,
+  "postCreateCommand": "pip install -r requirements.txt"
+}

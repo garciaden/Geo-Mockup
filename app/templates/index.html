@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <!-- Hero / Welcome -->
+  <div class="p-5 mb-4 bg-light rounded-3">
+    <div class="container-fluid py-5">
+      <h1 class="display-5 fw-bold">Concord Lab Manager</h1>
+      <p class="col-md-8 fs-4">
+        Track people, projects, samples, and data — all in one place. 
+        Streamline workflows and reduce errors with an integrated lab management system.
+      </p>
+      <a href="{{ url_for('projects') }}" class="btn btn-primary btn-lg">Go to Projects</a>
+    </div>
+  </div>
+
+  <!-- Quick Stats / Dashboard Cards -->
+  <div class="row text-center mb-5">
+    <div class="col-md-3 mb-3">
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <h5 class="card-title">Projects</h5>
+          <p class="display-6">5</p>
+          <small class="text-muted">3 Active</small>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3 mb-3">
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <h5 class="card-title">Samples</h5>
+          <p class="display-6">120</p>
+          <small class="text-muted">Processed</small>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3 mb-3">
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <h5 class="card-title">Users</h5>
+          <p class="display-6">15</p>
+          <small class="text-muted">Registered</small>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3 mb-3">
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <h5 class="card-title">Data Records</h5>
+          <p class="display-6">45</p>
+          <small class="text-muted">This Week</small>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Recent Activity -->
+  <h2 class="mb-3">Recent Activity</h2>
+  <ul class="list-group">
+    <li class="list-group-item d-flex justify-content-between align-items-center">
+      Jane Doe uploaded new particle size data
+      <span class="badge bg-secondary">2 hours ago</span>
+    </li>
+    <li class="list-group-item d-flex justify-content-between align-items-center">
+      Dr. Smith created Project <em>Volcanic Glass Imaging</em>
+      <span class="badge bg-secondary">Yesterday</span>
+    </li>
+    <li class="list-group-item d-flex justify-content-between align-items-center">
+      Susan completed curation step on Sample #45
+      <span class="badge bg-secondary">3 days ago</span>
+    </li>
+  </ul>
+
+{% endblock %}
