@@ -1,0 +1,15 @@
+version: "3.9"
+
+services:
+  labmanager:
+    build: .
+    container_name: labmanager
+    restart: unless-stopped
+    # ports:
+      # - "5847:8000"   # Internal port (Gunicorn runs here)
+    networks:
+      - proxy-net
+
+networks:
+  proxy-net:
+    external: true
