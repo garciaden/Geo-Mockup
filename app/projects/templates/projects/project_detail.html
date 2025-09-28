@@ -1,0 +1,148 @@
+{% extends "base.html" %}
+{% block content %}
+  <h1 class="mb-4">{{ project.title }}</h1>
+
+  <!-- Tabs -->
+  <ul class="nav nav-tabs mb-3" id="projectTabs" role="tablist">
+    <li class="nav-item" role="presentation">
+      <button class="nav-link active" id="overview-tab" data-bs-toggle="tab" data-bs-target="#overview" type="button" role="tab">
+        Overview
+      </button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button class="nav-link" id="samples-tab" data-bs-toggle="tab" data-bs-target="#samples" type="button" role="tab">
+        Samples
+      </button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button class="nav-link" id="files-tab" data-bs-toggle="tab" data-bs-target="#files" type="button" role="tab">
+        Files
+      </button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button class="nav-link" id="activity-tab" data-bs-toggle="tab" data-bs-target="#activity" type="button" role="tab">
+        Activity Log
+      </button>
+    </li>
+  </ul>
+
+  <!-- Tab Content -->
+  <div class="tab-content">
+
+    <!-- Overview -->
+    <div class="tab-pane fade show active" id="overview" role="tabpanel">
+      <div class="card shadow-sm mb-4">
+        <div class="card-body">
+          <p><strong>Owner:</strong> {{ project.owner }}</p>
+          <p><strong>Status:</strong> 
+            <span class="badge {% if project.status == 'Completed' %}bg-success
+                               {% elif project.status == 'Ongoing' %}bg-warning text-dark
+                               {% elif project.status == 'In Review' %}bg-info
+                               {% elif project.status == 'Archived' %}bg-secondary
+                               {% endif %}">
+              {{ project.status }}
+            </span>
+          </p>
+          <p><strong>Type:</strong> {{ project.type }}</p>
+          <p><strong>Collaborators:</strong> {{ project.collaborators }}</p>
+          <p><strong>Priority:</strong> {{ project.priority }}</p>
+          <p><strong>Last updated:</strong> {{ project.last_updated }}</p>
+          <hr>
+          <p><strong>Description:</strong></p>
+          <p>{{ project.description }}</p>
+          <div class="mb-2">
+            {% for tag in project.tags %}
+              <span class="badge bg-light text-dark border">{{ tag }}</span>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Samples -->
+    <div class="tab-pane fade" id="samples" role="tabpanel">
+      <h4>Associated Samples</h4>
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th>Sample ID</th>
+            <th>Collected On</th>
+            <th>Prepared By</th>
+            <th>Status</th>
+            <th>Notes</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>S-2025-001</td>
+            <td>2025-09-15</td>
+            <td>Samantha Diaz</td>
+            <td><span class="badge bg-warning text-dark">Processing</span></td>
+            <td>Sieved at 63µm fraction</td>
+          </tr>
+          <tr>
+            <td>S-2025-002</td>
+            <td>2025-09-16</td>
+            <td>John Wright</td>
+            <td><span class="badge bg-success">Completed</span></td>
+            <td>Stored in archive</td>
+          </tr>
+          <tr>
+            <td>S-2025-003</td>
+            <td>2025-09-18</td>
+            <td>Ian Keitlan</td>
+            <td><span class="badge bg-info">In Review</span></td>
+            <td>Awaiting microscopy results</td>
+          </tr>
+        </tbody>
+      </table>
+      <a href="#" class="btn btn-sm btn-primary">+ Add Sample</a>
+    </div>
+
+    <!-- Files -->
+    <div class="tab-pane fade" id="files" role="tabpanel">
+      <h4>Project Files</h4>
+      <ul class="list-group mb-3">
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+          sediment_data_001.csv
+          <span class="text-muted small">Uploaded by Carlos, 2025-09-15 10:22 AM</span>
+        </li>
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+          sample_images.zip
+          <span class="text-muted small">Uploaded by Samantha, 2025-09-18 03:40 PM</span>
+        </li>
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+          geochem_results.xlsx
+          <span class="text-muted small">Uploaded by Matthew, 2025-09-20 09:10 AM</span>
+        </li>
+      </ul>
+      <a href="#" class="btn btn-sm btn-primary">+ Upload File</a>
+    </div>
+
+    <!-- Activity Log -->
+    <div class="tab-pane fade" id="activity" role="tabpanel">
+      <h4>Activity Log</h4>
+      <ul class="list-group">
+        <li class="list-group-item">
+          2025-09-20 08:15 AM — <strong>{{ project.owner }}</strong> created the project
+        </li>
+        <li class="list-group-item">
+          2025-09-21 11:45 AM — <strong>Samantha Diaz</strong> added sample <em>S-2025-001</em>
+        </li>
+        <li class="list-group-item">
+          2025-09-22 02:30 PM — <strong>Carlos Cortes Garcia</strong> uploaded file <em>sediment_data_001.csv</em>
+        </li>
+        <li class="list-group-item">
+          2025-09-23 09:20 AM — <strong>John Wright</strong> updated project metadata (priority changed to High)
+        </li>
+        <li class="list-group-item">
+          2025-09-25 04:05 PM — <strong>Ian Keitlan</strong> marked sample <em>S-2025-003</em> as “In Review”
+        </li>
+      </ul>
+    </div>
+
+
+  </div>
+
+  <a href="{{ url_for('projects.project_list') }}" class="btn btn-secondary mt-4">← Back to Projects</a>
+{% endblock %}

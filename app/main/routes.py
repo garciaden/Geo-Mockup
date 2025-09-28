@@ -10,3 +10,4 @@ def index():
 @bp.route('/login')
 def fake_login():
     return redirect(url_for('auth.login'))
+

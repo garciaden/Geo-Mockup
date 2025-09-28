@@ -2,23 +2,83 @@
 {% block content %}
   <h1 class="mb-4 text-center">All Projects</h1>
 
-  <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+  <!-- Summary bar -->
+  <div class="alert alert-info text-center mb-4">
+    <strong>5 Ongoing</strong> | <strong>2 Completed</strong> | <strong>2 In Review</strong> | <strong>1 Archived</strong>
+  </div>
+
+  <!-- Controls row -->
+  <div class="d-flex flex-wrap justify-content-between align-items-center mb-4">
+    <!-- Search -->
+    <form class="d-flex mb-2 mb-md-0" role="search">
+      <input class="form-control me-2" type="search" placeholder="Search projects..." aria-label="Search">
+      <button class="btn btn-outline-success" type="submit">Search</button>
+    </form>
+
+    <div class="d-flex">
+      <!-- Filters -->
+      <div class="btn-group me-2">
+        <button type="button" class="btn btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown">
+          Filter by Status
+        </button>
+        <ul class="dropdown-menu">
+          <li><a class="dropdown-item" href="#">Ongoing</a></li>
+          <li><a class="dropdown-item" href="#">Completed</a></li>
+          <li><a class="dropdown-item" href="#">In Review</a></li>
+          <li><a class="dropdown-item" href="#">Archived</a></li>
+        </ul>
+      </div>
+
+      <!-- Sort -->
+      <div class="btn-group me-2">
+        <button type="button" class="btn btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown">
+          Sort
+        </button>
+        <ul class="dropdown-menu">
+          <li><a class="dropdown-item" href="#">By Owner</a></li>
+          <li><a class="dropdown-item" href="#">By Date Updated</a></li>
+          <li><a class="dropdown-item" href="#">By Priority</a></li>
+        </ul>
+      </div>
+
+      <!-- Add Project -->
+      <a href="#" class="btn btn-primary">+ New Project</a>
+    </div>
+  </div>
+
+  <!-- Project grid -->
+  <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 mb-5">
     {% for project in projects %}
       <div class="col">
         <div class="card h-100 shadow-sm border-0">
           <div class="card-body">
             <h5 class="card-title">{{ project.title }}</h5>
-            <p class="card-text mb-1"><strong>Owner:</strong> {{ project.owner }}</p>
+            <p class="card-text"><strong>Owner:</strong> {{ project.owner }}</p>
+            <p class="card-text"><strong>Type:</strong> {{ project.type }}</p>
+            <p class="card-text"><strong>Collaborators:</strong> {{ project.collaborators }}</p>
+            <div class="mb-2">
+              {% for tag in project.tags %}
+                <span class="badge bg-light text-dark border">{{ tag }}</span>
+              {% endfor %}
+            </div>
             <p class="card-text">
               <span class="badge {% if project.status == 'Completed' %}bg-success
                                  {% elif project.status == 'Ongoing' %}bg-warning text-dark
-                                 {% else %}bg-info{% endif %}">
+                                 {% elif project.status == 'In Review' %}bg-info
+                                 {% elif project.status == 'Archived' %}bg-secondary
+                                 {% else %}bg-light{% endif %}">
                 {{ project.status }}
               </span>
             </p>
+            <small class="text-muted">Last updated: {{ project.last_updated }}</small>
           </div>
-          <div class="card-footer text-end bg-white border-0">
-            <a href="#" class="btn btn-sm btn-outline-primary">View</a>
+          <div class="card-footer d-flex justify-content-between bg-white border-0">
+            <small class="text-muted">Priority: {{ project.priority }}</small>
+            <div>
+              <a href="{{ url_for('projects.project_detail', project_id=project.id) }}" class="btn btn-sm btn-outline-primary">View</a>
+              <a href="#" class="btn btn-sm btn-outline-secondary">Edit</a>
+              <a href="#" class="btn btn-sm btn-outline-danger">Archive</a>
+            </div>
           </div>
         </div>
       </div>

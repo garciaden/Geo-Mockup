@@ -2,30 +2,32 @@
 
 {% block content %}
   <!-- Hero / Welcome -->
-  <div class="p-5 mb-4 bg-light rounded-3">
-    <div class="container-fluid py-5">
+  <div class="p-5 mb-4 bg-light rounded-3 shadow-sm">
+    <div class="container-fluid py-5 text-center">
       <h1 class="display-5 fw-bold">Concord Lab Manager</h1>
-      <p class="col-md-8 fs-4">
+      <p class="col-md-10 mx-auto fs-4">
         Track people, projects, samples, and data — all in one place. 
         Streamline workflows and reduce errors with an integrated lab management system.
       </p>
-      <a href="{{ url_for('projects.project_list') }}" class="btn btn-primary btn-lg">Go to Projects</a>
+      <a href="{{ url_for('projects.project_list') }}" class="btn btn-primary btn-lg">
+        🚀 Go to Projects
+      </a>
     </div>
   </div>
 
   <!-- Quick Stats / Dashboard Cards -->
   <div class="row text-center mb-5">
     <div class="col-md-3 mb-3">
-      <div class="card shadow-sm">
+      <div class="card shadow-sm border-start border-primary border-3">
         <div class="card-body">
           <h5 class="card-title">Projects</h5>
-          <p class="display-6">5</p>
+          <p class="display-6">9</p>
           <small class="text-muted">3 Active</small>
         </div>
       </div>
     </div>
     <div class="col-md-3 mb-3">
-      <div class="card shadow-sm">
+      <div class="card shadow-sm border-start border-success border-3">
         <div class="card-body">
           <h5 class="card-title">Samples</h5>
           <p class="display-6">120</p>
@@ -34,7 +36,7 @@
       </div>
     </div>
     <div class="col-md-3 mb-3">
-      <div class="card shadow-sm">
+      <div class="card shadow-sm border-start border-warning border-3">
         <div class="card-body">
           <h5 class="card-title">Users</h5>
           <p class="display-6">15</p>
@@ -43,7 +45,7 @@
       </div>
     </div>
     <div class="col-md-3 mb-3">
-      <div class="card shadow-sm">
+      <div class="card shadow-sm border-start border-info border-3">
         <div class="card-body">
           <h5 class="card-title">Data Records</h5>
           <p class="display-6">45</p>
@@ -55,18 +57,30 @@
 
   <!-- Recent Activity -->
   <h2 class="mb-3">Recent Activity</h2>
-  <ul class="list-group">
+  <ul class="list-group shadow-sm">
     <li class="list-group-item d-flex justify-content-between align-items-center">
-      Jane Doe uploaded new particle size data
-      <span class="badge bg-secondary">2 hours ago</span>
+      <div>
+        <strong>Carlos Cortes Garcia</strong> uploaded file <em>particle_sizes.csv</em>
+      </div>
+      <span class="badge bg-secondary">2025-09-26 10:15 AM</span>
     </li>
     <li class="list-group-item d-flex justify-content-between align-items-center">
-      Dr. Smith created Project <em>Volcanic Glass Imaging</em>
-      <span class="badge bg-secondary">Yesterday</span>
+      <div>
+        <strong>Matthew Kenner</strong> created Project <em>Volcanic Glass Imaging</em>
+      </div>
+      <span class="badge bg-secondary">2025-09-25 03:40 PM</span>
     </li>
     <li class="list-group-item d-flex justify-content-between align-items-center">
-      Susan completed curation step on Sample #45
-      <span class="badge bg-secondary">3 days ago</span>
+      <div>
+        <strong>Ian Keitlan</strong> completed curation step on <em>Sample S-2025-045</em>
+      </div>
+      <span class="badge bg-secondary">2025-09-24 09:05 AM</span>
+    </li>
+    <li class="list-group-item d-flex justify-content-between align-items-center">
+      <div>
+        <strong>Killian Bertsch</strong> updated metadata for <em>Tephra Analysis</em>
+      </div>
+      <span class="badge bg-secondary">2025-09-23 01:22 PM</span>
     </li>
   </ul>
 
