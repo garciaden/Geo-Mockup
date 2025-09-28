@@ -11,4 +11,7 @@ def create_app(config_class="config.DevelopmentConfig"):
     from app.main import bp as main_bp
     app.register_blueprint(main_bp)
 
+    from app.projects import bp as projects_bp
+    app.register_blueprint(projects_bp, url_prefix='/projects')
+
     return app
