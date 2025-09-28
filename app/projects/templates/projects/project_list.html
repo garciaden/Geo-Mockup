@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block content %}
+  <h1 class="mb-4 text-center">All Projects</h1>
+
+  <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+    {% for project in projects %}
+      <div class="col">
+        <div class="card h-100 shadow-sm border-0">
+          <div class="card-body">
+            <h5 class="card-title">{{ project.title }}</h5>
+            <p class="card-text mb-1"><strong>Owner:</strong> {{ project.owner }}</p>
+            <p class="card-text">
+              <span class="badge {% if project.status == 'Completed' %}bg-success
+                                 {% elif project.status == 'Ongoing' %}bg-warning text-dark
+                                 {% else %}bg-info{% endif %}">
+                {{ project.status }}
+              </span>
+            </p>
+          </div>
+          <div class="card-footer text-end bg-white border-0">
+            <a href="#" class="btn btn-sm btn-outline-primary">View</a>
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+{% endblock %}
