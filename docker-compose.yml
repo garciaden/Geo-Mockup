@@ -5,8 +5,8 @@ services:
     build: .
     container_name: labmanager
     restart: unless-stopped
-    # ports:
-      # - "5847:8000"   # Internal port (Gunicorn runs here)
+    ports:
+      - "5847:8000"   # Internal port (Gunicorn runs here)
     networks:
       - proxy-net
 
