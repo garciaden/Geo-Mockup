@@ -1,0 +1,474 @@
+{% extends "base.html" %}
+{% block content %}
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h1 class="mb-1">{{ sample.sample_code }}</h1>
+      <p class="text-muted mb-0">{{ sample.nickname }}</p>
+      <div class="d-flex flex-wrap gap-2 mt-2">
+        {% for flag in sample.metadata_flags %}
+          {% if flag == 'complete' %}
+            <span class="badge bg-success">Metadata Complete</span>
+          {% elif flag == 'needs-lab-notes' %}
+            <span class="badge bg-warning text-dark">Needs Lab Notes</span>
+          {% elif flag == 'legacy' %}
+            <span class="badge bg-secondary">Legacy Import</span>
+          {% elif flag == 'partial' %}
+            <span class="badge bg-info text-dark">Partial</span>
+          {% endif %}
+        {% endfor %}
+      </div>
+    </div>
+    <div class="d-flex flex-wrap gap-2">
+      <button class="btn btn-outline-secondary">Download Sample Packet</button>
+      <button class="btn btn-outline-primary">Toggle Training Mode</button>
+      <button class="btn btn-primary" data-bs-toggle="tab" data-bs-target="#processing">Start Workflow</button>
+    </div>
+  </div>
+
+  <div class="row g-4 mb-4">
+    <div class="col-md-4">
+      <div class="card shadow-sm border-0 h-100">
+        <div class="card-body">
+          <h6 class="text-uppercase text-muted">Collection Summary</h6>
+          <p class="mb-1"><strong>Date:</strong> {{ sample.collected_on_display }}</p>
+          <p class="mb-1"><strong>Collected by:</strong> {{ sample.collected_by | join(', ') }}</p>
+          <p class="mb-0"><strong>Context:</strong> {{ sample.site.depositional_context }}</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card shadow-sm border-0 h-100">
+        <div class="card-body">
+          <h6 class="text-uppercase text-muted">Site / Station</h6>
+          <p class="mb-1"><strong>Site:</strong> {{ sample.site.site_name }}</p>
+          {% if sample.site.station %}<p class="mb-1"><strong>Station:</strong> {{ sample.site.station }}</p>{% endif %}
+          {% if sample.site.stratum %}<p class="mb-1"><strong>Stratum:</strong> {{ sample.site.stratum }}</p>{% endif %}
+          {% if sample.site.depth_cm %}<p class="mb-1"><strong>Depth:</strong> {{ sample.site.depth_cm }} cm</p>{% endif %}
+          {% if sample.site.gps %}
+            <p class="mb-0"><strong>GPS:</strong> {{ sample.site.gps.lat }}, {{ sample.site.gps.lon }} ({{ sample.site.gps.datum }})</p>
+          {% else %}
+            <p class="mb-0 text-muted">No GPS recorded.</p>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card shadow-sm border-0 h-100">
+        <div class="card-body">
+          <h6 class="text-uppercase text-muted">Associated Projects</h6>
+          {% if sample.projects %}
+            <ul class="list-unstyled mb-0">
+              {% for assoc in sample.projects %}
+                <li class="mb-2">
+                  <strong>{{ assoc.project.title }}</strong><br>
+                  <small class="text-muted">{{ assoc.role }} · <a href="{{ url_for('projects.project_detail', project_id=assoc.project.id) }}">View Project</a></small>
+                </li>
+              {% endfor %}
+            </ul>
+          {% else %}
+            <p class="text-muted mb-0">Not yet linked to a project.</p>
+          {% endif %}
+          <a href="#" class="btn btn-sm btn-outline-primary mt-3">Link to Another Project</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <ul class="nav nav-tabs mb-3" role="tablist">
+    <li class="nav-item" role="presentation">
+      <button class="nav-link active" id="collection-tab" data-bs-toggle="tab" data-bs-target="#collection" type="button" role="tab">Collection</button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button class="nav-link" id="processing-tab" data-bs-toggle="tab" data-bs-target="#processing" type="button" role="tab">Processing &amp; Preparation</button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button class="nav-link" id="physical-tab" data-bs-toggle="tab" data-bs-target="#physical" type="button" role="tab">Physical Analysis</button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button class="nav-link" id="imaging-tab" data-bs-toggle="tab" data-bs-target="#imaging" type="button" role="tab">Physical Microanalysis (Imaging)</button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button class="nav-link" id="geochem-tab" data-bs-toggle="tab" data-bs-target="#geochem" type="button" role="tab">Geochemical Analysis</button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button class="nav-link" id="correlation-tab" data-bs-toggle="tab" data-bs-target="#correlation" type="button" role="tab">Correlation</button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button class="nav-link" id="attachments-tab" data-bs-toggle="tab" data-bs-target="#attachments" type="button" role="tab">Attachments</button>
+    </li>
+  </ul>
+
+  <div class="tab-content">
+    <div class="tab-pane fade show active" id="collection" role="tabpanel">
+      <div class="card shadow-sm border-0 mb-4">
+        <div class="card-body">
+          <h5 class="card-title">Field Checklist</h5>
+          <ul class="list-group list-group-flush">
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+              Date and time recorded
+              <span class="badge {% if sample.collected_on_display != 'Unknown' %}bg-success{% else %}bg-warning text-dark{% endif %}">✓</span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+              Coordinates captured
+              <span class="badge {% if sample.site.gps %}bg-success{% else %}bg-warning text-dark{% endif %}">{% if sample.site.gps %}✓{% else %}Missing{% endif %}</span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+              Stratigraphic interval entered
+              <span class="badge {% if sample.site.stratum %}bg-success{% else %}bg-warning text-dark{% endif %}">{% if sample.site.stratum %}✓{% else %}Pending{% endif %}</span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+              Field notes uploaded
+              <span class="badge {% if sample.attachments.notes %}bg-success{% else %}bg-warning text-dark{% endif %}">{% if sample.attachments.notes %}✓{% else %}Needed{% endif %}</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+      <div class="card shadow-sm border-0 mb-4">
+        <div class="card-body">
+          <h5 class="card-title">Summary</h5>
+          <p class="mb-0">{{ sample.site.depositional_context }}</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="tab-pane fade" id="processing" role="tabpanel">
+      <div class="card shadow-sm border-0 mb-4">
+        <div class="card-body">
+          <h5 class="card-title">Sieving Workflow</h5>
+          {% if sample.processing %}
+            <p><strong>Sieve Stack:</strong> {{ sample.processing.sieve_stack | join(', ') }}</p>
+            <div class="table-responsive">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th>Fraction</th>
+                    <th>Expected %</th>
+                    <th>Wet Mass (g)</th>
+                    <th>Dry Mass (g)</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for entry in sample.processing.mass_entries %}
+                    {% set target = sample.processing.fraction_targets[loop.index0] if loop.index0 < sample.processing.fraction_targets|length else None %}
+                    <tr>
+                      <td>{{ entry.fraction }}</td>
+                      <td>{% if target %}{{ target.expected_percent }}%{% else %}—{% endif %}</td>
+                      <td>{{ entry.wet_mass_g or '—' }}</td>
+                      <td>{{ entry.dry_mass_g or '—' }}</td>
+                    </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+            <p class="small text-muted mb-0">Total dry mass: {{ sample.processing.derived_metrics.total_dry_mass_g }} g · Recovery: {{ sample.processing.derived_metrics.mass_recovery_percent }}%</p>
+          {% else %}
+            <p class="text-muted mb-0">Processing plan not configured for this sample.</p>
+          {% endif %}
+        </div>
+      </div>
+      <div class="card shadow-sm border-0">
+        <div class="card-body">
+          <h5 class="card-title">Next Actions</h5>
+          <p class="mb-0">Assign sieve fractions, confirm mass balance, and queue physical analysis.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="tab-pane fade" id="physical" role="tabpanel">
+      <div class="card shadow-sm border-0 mb-4">
+        <div class="card-body">
+          <h5 class="card-title">Particle Size &amp; Density</h5>
+          {% if sample.physical_analysis %}
+            <p><strong>Particle Size Distribution:</strong> {{ sample.physical_analysis.particle_size_distribution }}</p>
+            <p><strong>Bulk Density:</strong> {% if sample.physical_analysis.density_g_cc %}{{ sample.physical_analysis.density_g_cc }} g/cm³{% else %}—{% endif %}</p>
+            <p><strong>Clast Size:</strong> {{ sample.physical_analysis.clast_size or '—' }}</p>
+            <p><strong>Componentry:</strong> {{ sample.physical_analysis.componentry_summary or '—' }}</p>
+            <h6 class="mt-4">Uploads</h6>
+            {% if sample.physical_analysis.uploads %}
+              <ul class="list-group list-group-flush">
+                {% for upload in sample.physical_analysis.uploads %}
+                  <li class="list-group-item d-flex justify-content-between">
+                    {{ upload.filename }}
+                    <span class="badge bg-secondary">{{ upload.status }}</span>
+                  </li>
+                {% endfor %}
+              </ul>
+            {% else %}
+              <p class="text-muted mb-0">No analysis files uploaded.</p>
+            {% endif %}
+          {% else %}
+            <p class="text-muted mb-0">Physical analysis not scheduled.</p>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+    <div class="tab-pane fade" id="imaging" role="tabpanel">
+      <div class="card shadow-sm border-0 mb-4">
+        <div class="card-body">
+          <h5 class="card-title">Imaging Sessions</h5>
+          {% if sample.imaging and sample.imaging.sessions %}
+            <div class="table-responsive">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th>Instrument</th>
+                    <th>Date</th>
+                    <th>Operator</th>
+                    <th>Settings</th>
+                    <th>Files</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for session in sample.imaging.sessions %}
+                    <tr>
+                      <td>{{ session.instrument }}</td>
+                      <td>{{ session.date }}</td>
+                      <td>{{ session.operator or '—' }}</td>
+                      <td>{{ session.settings or '—' }}</td>
+                      <td>
+                        {% if session.files %}
+                          <ul class="list-unstyled mb-0 small">
+                            {% for file in session.files %}
+                              <li>{{ file }}</li>
+                            {% endfor %}
+                          </ul>
+                        {% else %}
+                          —
+                        {% endif %}
+                      </td>
+                      <td><span class="badge bg-info">{{ session.status }}</span></td>
+                    </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          {% else %}
+            <p class="text-muted mb-0">No imaging sessions have been logged.</p>
+          {% endif %}
+        </div>
+      </div>
+      {% if sample.imaging and sample.imaging.next_steps %}
+        <div class="card shadow-sm border-0">
+          <div class="card-body">
+            <h5 class="card-title">Next Steps</h5>
+            <p class="mb-0">{{ sample.imaging.next_steps }}</p>
+          </div>
+        </div>
+      {% endif %}
+    </div>
+
+    <div class="tab-pane fade" id="geochem" role="tabpanel">
+      <div class="card shadow-sm border-0 mb-4">
+        <div class="card-body">
+          <h5 class="card-title">Geochemical Data Management</h5>
+          {% if sample.geochemistry %}
+            <div class="row g-3 mb-3">
+              <div class="col-md-4">
+                <h6>Raw Uploads</h6>
+                {% if sample.geochemistry.raw_uploads %}
+                  <ul class="list-group list-group-flush">
+                    {% for file in sample.geochemistry.raw_uploads %}
+                      <li class="list-group-item">{{ file }}</li>
+                    {% endfor %}
+                  </ul>
+                {% else %}
+                  <p class="text-muted">None</p>
+                {% endif %}
+              </div>
+              <div class="col-md-4">
+                <h6>Processed Versions</h6>
+                {% if sample.geochemistry.processed_uploads %}
+                  <ul class="list-group list-group-flush">
+                    {% for file in sample.geochemistry.processed_uploads %}
+                      <li class="list-group-item">{{ file }}</li>
+                    {% endfor %}
+                  </ul>
+                {% else %}
+                  <p class="text-muted">Pending auto-processing.</p>
+                {% endif %}
+              </div>
+              <div class="col-md-4">
+                <h6>Reference Standards</h6>
+                {% if sample.geochemistry.reference_standards %}
+                  <div class="d-flex flex-wrap gap-2">
+                    {% for std in sample.geochemistry.reference_standards %}
+                      <span class="badge bg-light text-dark border">{{ std }}</span>
+                    {% endfor %}
+                  </div>
+                {% else %}
+                  <p class="text-muted">Add standards to meet QA requirements.</p>
+                {% endif %}
+              </div>
+            </div>
+            <p class="mb-2"><strong>QA Notes:</strong> {{ sample.geochemistry.qa_notes or '—' }}</p>
+            <p class="mb-0"><strong>Auto Processing:</strong> {{ sample.geochemistry.auto_processing or 'Disabled' }}</p>
+          {% else %}
+            <p class="text-muted mb-0">Geochemical workflow not configured.</p>
+          {% endif %}
+        </div>
+      </div>
+      <div class="card shadow-sm border-0">
+        <div class="card-body">
+          <h5 class="card-title">Repository Integration</h5>
+          <div class="d-flex flex-wrap gap-2">
+            <button class="btn btn-outline-primary">Prepare EarthChem Package</button>
+            <button class="btn btn-outline-primary">Prepare SESAR Submission</button>
+            <button class="btn btn-outline-secondary">Assign DOI / IGSN</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="tab-pane fade" id="correlation" role="tabpanel">
+      <div class="card shadow-sm border-0 mb-4">
+        <div class="card-body">
+          <h5 class="card-title">Correlation Summary</h5>
+          {% if sample.correlation %}
+            <p>{{ sample.correlation.summary or 'No correlation work has been started.' }}</p>
+            {% if sample.correlation.targets %}
+              <div class="table-responsive">
+                <table class="table">
+                  <thead>
+                    <tr>
+                      <th>Sample</th>
+                      <th>Project</th>
+                      <th>Basis</th>
+                      <th>Confidence</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for target in sample.correlation.targets %}
+                      <tr>
+                        <td>{{ target.sample_code }}</td>
+                        <td>{{ target.project }}</td>
+                        <td>{{ target.basis }}</td>
+                        <td>{{ target.confidence }}</td>
+                      </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+            {% endif %}
+            <h6 class="mt-4">Confidence Checklist</h6>
+            <ul class="list-group list-group-flush">
+              {% for item in sample.correlation.checklist %}
+                <li class="list-group-item d-flex justify-content-between">
+                  {{ item.item }}
+                  <span class="badge {% if item.status %}bg-success{% else %}bg-warning text-dark{% endif %}">{% if item.status %}Complete{% else %}Pending{% endif %}</span>
+                </li>
+              {% endfor %}
+            </ul>
+          {% else %}
+            <p class="text-muted mb-0">Correlation workflow not initiated.</p>
+          {% endif %}
+        </div>
+      </div>
+      <div class="card shadow-sm border-0">
+        <div class="card-body">
+          <h5 class="card-title">Compare Samples</h5>
+          <p class="mb-2">Select additional samples across projects to build multi-parameter correlations.</p>
+          <a href="{{ url_for('samples.sample_list') }}" class="btn btn-outline-primary">Open Correlation Workspace</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="tab-pane fade" id="attachments" role="tabpanel">
+      <div class="card shadow-sm border-0 mb-4">
+        <div class="card-body">
+          <h5 class="card-title">Field Photos</h5>
+          {% if sample.attachments.images %}
+            <div class="row g-3">
+              {% for image in sample.attachments.images %}
+                <div class="col-md-4">
+                  <div class="border rounded p-3 h-100 text-center">
+                    <div class="bg-light rounded mb-2" style="height: 160px;"></div>
+                    <p class="small mb-0"><strong>{{ image.filename }}</strong></p>
+                    <small class="text-muted">{{ image.caption }}</small>
+                  </div>
+                </div>
+              {% endfor %}
+            </div>
+          {% else %}
+            <p class="text-muted mb-0">No images uploaded yet.</p>
+          {% endif %}
+        </div>
+      </div>
+      <div class="card shadow-sm border-0 mb-4">
+        <div class="card-body">
+          <h5 class="card-title">Field &amp; Instrument Notes</h5>
+          <div class="row g-3">
+            <div class="col-md-6">
+              <h6>Field Notes</h6>
+              {% if sample.attachments.notes %}
+                <ul class="list-group list-group-flush">
+                  {% for note in sample.attachments.notes %}
+                    <li class="list-group-item">{{ note }}</li>
+                  {% endfor %}
+                </ul>
+              {% else %}
+                <p class="text-muted">No field notes uploaded.</p>
+              {% endif %}
+            </div>
+            <div class="col-md-6">
+              <h6>Instrument Logs</h6>
+              {% if sample.attachments.instrument_logs %}
+                <ul class="list-group list-group-flush">
+                  {% for log in sample.attachments.instrument_logs %}
+                    <li class="list-group-item"><strong>{{ log.instrument }}:</strong> {{ log.detail }}</li>
+                  {% endfor %}
+                </ul>
+              {% else %}
+                <p class="text-muted">No instrument logs recorded.</p>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+      <a href="#" class="btn btn-outline-primary">Upload Additional Files</a>
+    </div>
+  </div>
+
+  <div class="row g-4 mt-4">
+    <div class="col-md-4">
+      <div class="card shadow-sm border-0 h-100">
+        <div class="card-body">
+          <h5 class="card-title">Analysis &amp; Reporting</h5>
+          <p class="text-muted">Generate particle size plots, geochemical diagrams, and PDF reports that bundle metadata automatically.</p>
+          <div class="d-flex flex-wrap gap-2">
+            <button class="btn btn-outline-primary">Run Particle Size Plot</button>
+            <button class="btn btn-outline-secondary">Export Metadata PDF</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card shadow-sm border-0 h-100">
+        <div class="card-body">
+          <h5 class="card-title">Exports &amp; Repositories</h5>
+          <p class="text-muted">Prepare submission-ready bundles for EarthChem, SESAR, or internal archives.</p>
+          <div class="d-flex flex-wrap gap-2">
+            <button class="btn btn-outline-primary">Export CSV</button>
+            <button class="btn btn-outline-primary">Export XLSX</button>
+            <button class="btn btn-outline-secondary">Export PDF</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card shadow-sm border-0 h-100">
+        <div class="card-body">
+          <h5 class="card-title">Templates &amp; Training</h5>
+          <p class="text-muted">Provide crews with guided worksheets and highlight required fields in training mode.</p>
+          <div class="d-flex flex-wrap gap-2">
+            <button class="btn btn-outline-secondary">Download Field Sheet</button>
+            <button class="btn btn-outline-secondary">Launch Student Walkthrough</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <a href="{{ url_for('samples.sample_list') }}" class="btn btn-secondary mt-4">← Back to Samples</a>
+{% endblock %}

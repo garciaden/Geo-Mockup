@@ -1,0 +1,186 @@
+{% extends "base.html" %}
+{% block content %}
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h1 class="mb-1">Register Single Sample</h1>
+      <p class="text-muted mb-0">Capture field metadata in line with Stephen’s Tephra Collection workbook.</p>
+    </div>
+    <div class="d-flex flex-wrap gap-2">
+      <a href="{{ url_for('samples.sample_bulk_upload') }}" class="btn btn-outline-primary">Switch to Bulk Upload</a>
+    </div>
+  </div>
+
+  <form>
+    <div class="card shadow-sm border-0 mb-4">
+      <div class="card-body">
+        <h5 class="card-title">Sample Identifier</h5>
+        <div class="row g-3">
+          <div class="col-md-4">
+            <label class="form-label">Auto-generated Sample ID</label>
+            <input type="text" class="form-control" value="CULS-2025-XXX" disabled>
+            <div class="form-text">System assigns ID following lab convention.</div>
+          </div>
+          <div class="col-md-4">
+            <label class="form-label">Optional IGSN</label>
+            <input type="text" class="form-control" placeholder="e.g., IGSN:CU1234567">
+            <div class="form-text">Leave blank to request later.</div>
+          </div>
+          <div class="col-md-4">
+            <label class="form-label">Nickname / Field Label</label>
+            <input type="text" class="form-control" placeholder="Glass shard concentrate">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card shadow-sm border-0 mb-4">
+      <div class="card-body">
+        <h5 class="card-title">Project Associations</h5>
+        <p class="text-muted">Samples may link to multiple projects; visibility follows each project’s settings.</p>
+        <div class="row g-3">
+          <div class="col-md-6">
+            <label class="form-label">Primary Project</label>
+            <select class="form-select">
+              <option selected disabled>Select project...</option>
+              {% for project in projects %}
+                <option value="{{ project.id }}">{{ project.title }} · PI {{ project.owner }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">Additional Projects (optional)</label>
+            <select class="form-select" multiple>
+              {% for project in projects %}
+                <option value="{{ project.id }}">{{ project.title }} · {{ project.type }}</option>
+              {% endfor %}
+            </select>
+            <div class="form-text">Hold Ctrl/⌘ to select multiple collaborations.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card shadow-sm border-0 mb-4">
+      <div class="card-body">
+        <h5 class="card-title">Collection Metadata</h5>
+        <div class="row g-3">
+          <div class="col-md-4">
+            <label class="form-label">Site / Section</label>
+            <input type="text" class="form-control" placeholder="Red Hills Stratigraphic Section">
+          </div>
+          <div class="col-md-4">
+            <label class="form-label">Station ID</label>
+            <input type="text" class="form-control" placeholder="RHS-03">
+          </div>
+          <div class="col-md-4">
+            <label class="form-label">Core / Trench / Outcrop</label>
+            <input type="text" class="form-control" placeholder="Lapilli trench">
+          </div>
+          <div class="col-md-4">
+            <label class="form-label">Stratigraphic Interval</label>
+            <input type="text" class="form-control" placeholder="Unit B, 120-130 cm">
+          </div>
+          <div class="col-md-4">
+            <label class="form-label">Eruption / Response Tag</label>
+            <input type="text" class="form-control" placeholder="Sutton Branch eruption">
+          </div>
+          <div class="col-md-4">
+            <label class="form-label">Depositional Environment</label>
+            <input type="text" class="form-control" placeholder="Distal tephra fall over lacustrine clay">
+          </div>
+          <div class="col-md-3">
+            <label class="form-label">Collection Date</label>
+            <input type="date" class="form-control">
+          </div>
+          <div class="col-md-3">
+            <label class="form-label">Collection Time</label>
+            <input type="time" class="form-control">
+          </div>
+          <div class="col-md-3">
+            <label class="form-label">Latitude</label>
+            <input type="text" class="form-control" placeholder="37.3652">
+          </div>
+          <div class="col-md-3">
+            <label class="form-label">Longitude</label>
+            <input type="text" class="form-control" placeholder="-81.0965">
+          </div>
+          <div class="col-md-3">
+            <label class="form-label">Elevation (m)</label>
+            <input type="number" class="form-control" placeholder="948">
+          </div>
+          <div class="col-md-3">
+            <label class="form-label">Datum</label>
+            <input type="text" class="form-control" placeholder="WGS84">
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">Collected By</label>
+            <input type="text" class="form-control" placeholder="Samantha Diaz; Carlos Cortes Garcia">
+            <div class="form-text">Separate names with semicolons.</div>
+          </div>
+        </div>
+        <div class="alert alert-info mt-3" role="alert">
+          <strong>Checklist:</strong> Date, time, GPS, depositional context, and crew must be completed to meet minimum metadata.
+        </div>
+      </div>
+    </div>
+
+    <div class="card shadow-sm border-0 mb-4">
+      <div class="card-body">
+        <h5 class="card-title">Attachments & Field Documentation</h5>
+        <div class="row g-3">
+          <div class="col-md-4">
+            <label class="form-label">Field Photos</label>
+            <div class="border rounded p-3 text-center">
+              <p class="text-muted mb-2">Drag & drop images</p>
+              <button type="button" class="btn btn-sm btn-outline-secondary">Browse Files</button>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <label class="form-label">Field Notes (PDF/Images)</label>
+            <div class="border rounded p-3 text-center">
+              <p class="text-muted mb-2">Upload notebook scans</p>
+              <button type="button" class="btn btn-sm btn-outline-secondary">Upload Notes</button>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <label class="form-label">Instrument Readouts</label>
+            <div class="border rounded p-3 text-center">
+              <p class="text-muted mb-2">Attach GPS/Balance logs</p>
+              <button type="button" class="btn btn-sm btn-outline-secondary">Attach Logs</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card shadow-sm border-0 mb-4">
+      <div class="card-body">
+        <h5 class="card-title">Workflow Preparation</h5>
+        <div class="row g-3">
+          <div class="col-md-4">
+            <label class="form-label">Processing Plan</label>
+            <select class="form-select">
+              <option selected disabled>Select step...</option>
+              <option>Sieve + Mass Balance</option>
+              <option>Thin Section</option>
+              <option>Geochemical Run</option>
+            </select>
+          </div>
+          <div class="col-md-8">
+            <label class="form-label">Notes for Next Step</label>
+            <textarea class="form-control" rows="3" placeholder="Split sample for geochemistry; retain 50 g archive."></textarea>
+          </div>
+        </div>
+        <div class="form-check form-switch mt-3">
+          <input class="form-check-input" type="checkbox" id="autoProcessToggle" checked>
+          <label class="form-check-label" for="autoProcessToggle">Auto-run geochemical post-processing when data are uploaded</label>
+        </div>
+      </div>
+    </div>
+
+    <div class="d-flex justify-content-between">
+      <button type="button" class="btn btn-outline-secondary" onclick="history.back()">Cancel</button>
+      <button type="submit" class="btn btn-primary">Save Sample</button>
+    </div>
+  </form>
+{% endblock %}

@@ -1,84 +1,120 @@
 {% extends "base.html" %}
 
 {% block content %}
-  <!-- Hero / Welcome -->
   <div class="p-5 mb-4 bg-light rounded-3 shadow-sm">
     <div class="container-fluid py-5 text-center">
       <h1 class="display-5 fw-bold">Concord Lab Manager</h1>
       <p class="col-md-10 mx-auto fs-4">
-        Track people, projects, samples, and data — all in one place. 
-        Streamline workflows and reduce errors with an integrated lab management system.
+        Track people, projects, samples, and workflows in one place. Guided metadata checklists, bulk uploads,
+        and repository exports follow Stephen’s best-practice spreadsheets.
       </p>
-      <a href="{{ url_for('projects.project_list') }}" class="btn btn-primary btn-lg">
-        🚀 Go to Projects
-      </a>
+      <div class="d-flex flex-wrap justify-content-center gap-2">
+        <a href="{{ url_for('projects.project_create') }}" class="btn btn-primary btn-lg">+ New Project</a>
+        <a href="{{ url_for('samples.sample_register') }}" class="btn btn-outline-primary btn-lg">🧪 Register Sample</a>
+        <a href="{{ url_for('samples.sample_bulk_upload') }}" class="btn btn-outline-primary btn-lg">⬆️ Bulk Upload Samples</a>
+        <a href="{{ url_for('samples.sample_list') }}" class="btn btn-outline-secondary btn-lg">🚦 Start Workflow</a>
+      </div>
     </div>
   </div>
 
-  <!-- Quick Stats / Dashboard Cards -->
-  <div class="row text-center mb-5">
-    <div class="col-md-3 mb-3">
-      <div class="card shadow-sm border-start border-primary border-3">
+  <div class="row text-center mb-5 g-3">
+    <div class="col-md-4">
+      <div class="card shadow-sm border-start border-primary border-3 h-100">
         <div class="card-body">
-          <h5 class="card-title">Projects</h5>
-          <p class="display-6">9</p>
-          <small class="text-muted">3 Active</small>
+          <h5 class="card-title">Projects in Progress</h5>
+          <p class="display-6">{{ dashboard.projects_in_progress }}</p>
+          <small class="text-muted">Ongoing + in review projects running workflows.</small>
         </div>
       </div>
     </div>
-    <div class="col-md-3 mb-3">
-      <div class="card shadow-sm border-start border-success border-3">
+    <div class="col-md-4">
+      <div class="card shadow-sm border-start border-success border-3 h-100">
         <div class="card-body">
-          <h5 class="card-title">Samples</h5>
-          <p class="display-6">120</p>
-          <small class="text-muted">Processed</small>
+          <h5 class="card-title">Samples Registered</h5>
+          <p class="display-6">{{ dashboard.samples_registered }}</p>
+          <small class="text-muted">Single entries + legacy imports.</small>
         </div>
       </div>
     </div>
-    <div class="col-md-3 mb-3">
-      <div class="card shadow-sm border-start border-warning border-3">
+    <div class="col-md-4">
+      <div class="card shadow-sm border-start border-warning border-3 h-100">
         <div class="card-body">
-          <h5 class="card-title">Users</h5>
-          <p class="display-6">15</p>
-          <small class="text-muted">Registered</small>
-        </div>
-      </div>
-    </div>
-    <div class="col-md-3 mb-3">
-      <div class="card shadow-sm border-start border-info border-3">
-        <div class="card-body">
-          <h5 class="card-title">Data Records</h5>
-          <p class="display-6">45</p>
-          <small class="text-muted">This Week</small>
+          <h5 class="card-title">Active Workflow Steps</h5>
+          <p class="display-6">{{ dashboard.active_workflows }}</p>
+          <small class="text-muted">Processing, imaging, geochem, and correlation tasks underway.</small>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Recent Activity -->
+  <div class="row g-4 mb-5">
+    <div class="col-lg-6">
+      <div class="card shadow-sm border-0 h-100">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <h5 class="card-title mb-0">Projects in Progress</h5>
+            <a href="{{ url_for('projects.project_list') }}" class="btn btn-sm btn-outline-secondary">View All</a>
+          </div>
+          <ul class="list-group list-group-flush">
+            {% for project in dashboard.recent_projects %}
+              <li class="list-group-item d-flex justify-content-between align-items-start">
+                <div>
+                  <strong>{{ project.title }}</strong><br>
+                  <small class="text-muted">PI {{ project.owner }} · {{ project.type }}</small>
+                </div>
+                <span class="badge bg-warning text-dark">{{ project.status }}</span>
+              </li>
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="col-lg-6">
+      <div class="card shadow-sm border-0 h-100">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <h5 class="card-title mb-0">Fresh Samples</h5>
+            <a href="{{ url_for('samples.sample_list') }}" class="btn btn-sm btn-outline-secondary">Open Registry</a>
+          </div>
+          <ul class="list-group list-group-flush">
+            {% for sample in dashboard.recent_samples %}
+              <li class="list-group-item d-flex justify-content-between align-items-start">
+                <div>
+                  <strong>{{ sample.sample_code }}</strong><br>
+                  <small class="text-muted">{{ sample.collected_on_display }} · {{ sample.nickname }}</small>
+                </div>
+                <span class="badge bg-info">{{ sample.workflow_status[0].state }}</span>
+              </li>
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <h2 class="mb-3">Recent Activity</h2>
   <ul class="list-group shadow-sm">
     <li class="list-group-item d-flex justify-content-between align-items-center">
       <div>
-        <strong>Carlos Cortes Garcia</strong> uploaded file <em>particle_sizes.csv</em>
+        <strong>Carlos Cortes Garcia</strong> validated geochemical standards for <em>CULS-2025-018</em>
       </div>
       <span class="badge bg-secondary">2025-09-26 10:15 AM</span>
     </li>
     <li class="list-group-item d-flex justify-content-between align-items-center">
       <div>
-        <strong>Matthew Kenner</strong> created Project <em>Volcanic Glass Imaging</em>
+        <strong>Matthew Kenner</strong> bulk uploaded 8 samples to <em>Volcanic Glass Imaging</em>
       </div>
       <span class="badge bg-secondary">2025-09-25 03:40 PM</span>
     </li>
     <li class="list-group-item d-flex justify-content-between align-items-center">
       <div>
-        <strong>Ian Keitlan</strong> completed curation step on <em>Sample S-2025-045</em>
+        <strong>Ian Keitlan</strong> closed processing checklist for <em>CULS-2025-001</em>
       </div>
       <span class="badge bg-secondary">2025-09-24 09:05 AM</span>
     </li>
     <li class="list-group-item d-flex justify-content-between align-items-center">
       <div>
-        <strong>Killian Bertsch</strong> updated metadata for <em>Tephra Analysis</em>
+        <strong>Killian Bertsch</strong> uploaded SEM session to <em>Tephra Analysis</em>
       </div>
       <span class="badge bg-secondary">2025-09-23 01:22 PM</span>
     </li>

@@ -1,0 +1,191 @@
+{% extends "base.html" %}
+{% block content %}
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h1 class="mb-1">Create New Project</h1>
+      <p class="text-muted mb-0">Capture PI metadata, funding info, and visibility in line with Stephen’s project workbook.</p>
+    </div>
+    <div class="d-flex flex-wrap gap-2">
+      <button class="btn btn-outline-secondary">Toggle Training Mode</button>
+      <a href="{{ url_for('projects.project_list') }}" class="btn btn-outline-primary">Back to Projects</a>
+    </div>
+  </div>
+
+  <form>
+    <div class="card shadow-sm border-0 mb-4">
+      <div class="card-body">
+        <h5 class="card-title">Project Identity</h5>
+        <div class="row g-3">
+          <div class="col-md-6">
+            <label class="form-label">Project Title <span class="text-danger">*</span></label>
+            <input type="text" class="form-control" placeholder="Tephra Analysis">
+          </div>
+          <div class="col-md-3">
+            <label class="form-label">Visibility</label>
+            <select class="form-select">
+              {% for option in visibility_options %}
+                <option value="{{ option.value }}">{{ option.label }}</option>
+              {% endfor %}
+            </select>
+            <div class="form-text">Public view surfaces title &amp; PI only.</div>
+          </div>
+          <div class="col-md-3">
+            <label class="form-label">Status</label>
+            <select class="form-select">
+              <option>Planning</option>
+              <option>Ongoing</option>
+              <option>In Review</option>
+              <option>Completed</option>
+            </select>
+          </div>
+          <div class="col-md-4">
+            <label class="form-label">PI Name <span class="text-danger">*</span></label>
+            <input type="text" class="form-control" placeholder="Matthew Kenner">
+          </div>
+          <div class="col-md-4">
+            <label class="form-label">PI ORCID</label>
+            <input type="text" class="form-control" placeholder="0000-0002-1234-5678">
+          </div>
+          <div class="col-md-4">
+            <label class="form-label">Contact Email</label>
+            <input type="email" class="form-control" placeholder="pi@concord.edu">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card shadow-sm border-0 mb-4">
+      <div class="card-body">
+        <h5 class="card-title">Funding &amp; Metadata</h5>
+        <div class="row g-3">
+          <div class="col-md-4">
+            <label class="form-label">Funding Agency</label>
+            <select class="form-select">
+              <option selected disabled>Select agency...</option>
+              {% for agency in funding_agencies %}
+                <option>{{ agency }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="col-md-4">
+            <label class="form-label">Grant Number</label>
+            <input type="text" class="form-control" placeholder="NSF-EAR-1234567">
+          </div>
+          <div class="col-md-4">
+            <label class="form-label">IGSN / DOI (optional)</label>
+            <input type="text" class="form-control" placeholder="doi.org/10.xxxx">
+          </div>
+          <div class="col-md-12">
+            <label class="form-label">Project URLs</label>
+            <textarea class="form-control" rows="2" placeholder="https://example.com/project-page"></textarea>
+            <div class="form-text">Include field notebook links, data repositories, or collaboration drives.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card shadow-sm border-0 mb-4">
+      <div class="card-body">
+        <h5 class="card-title">Project Description &amp; Scope</h5>
+        <div class="row g-3">
+          <div class="col-md-8">
+            <label class="form-label">Overview</label>
+            <textarea class="form-control" rows="4" placeholder="Summarize objectives, collection sites, and expected workflows."></textarea>
+          </div>
+          <div class="col-md-4">
+            <label class="form-label">Workflows Included</label>
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" id="wfCollection" checked>
+              <label class="form-check-label" for="wfCollection">Collection</label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" id="wfProcessing" checked>
+              <label class="form-check-label" for="wfProcessing">Processing &amp; Preparation</label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" id="wfPhysical">
+              <label class="form-check-label" for="wfPhysical">Physical Analysis</label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" id="wfImaging">
+              <label class="form-check-label" for="wfImaging">Physical Microanalysis</label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" id="wfGeochem" checked>
+              <label class="form-check-label" for="wfGeochem">Geochemical Analysis</label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" id="wfCorrelation">
+              <label class="form-check-label" for="wfCorrelation">Correlation</label>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card shadow-sm border-0 mb-4">
+      <div class="card-body">
+        <h5 class="card-title">Team &amp; Roles</h5>
+        <p class="text-muted">Define collaborators according to lab access levels.</p>
+        <div class="row g-3">
+          <div class="col-md-6">
+            <label class="form-label">Project Owners</label>
+            <input type="text" class="form-control" placeholder="Primary investigators">
+            <div class="form-text">Owners can edit workflows, transfer projects, and run analyses.</div>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">Collaborators</label>
+            <input type="text" class="form-control" placeholder="Data entry, lab managers, students">
+            <div class="form-text">Separate names with semicolons.</div>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">View / Export Roles</label>
+            <input type="text" class="form-control" placeholder="External reviewers">
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">Controlled Vocabulary Sets</label>
+            <select class="form-select">
+              <option>Tephra Defaults</option>
+              <option>Sedimentology</option>
+              <option>Geochemistry</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card shadow-sm border-0 mb-4">
+      <div class="card-body">
+        <h5 class="card-title">Documents &amp; Templates</h5>
+        <div class="row g-3">
+          <div class="col-md-4">
+            <label class="form-label">Field Notebook</label>
+            <div class="border rounded p-3 text-center">
+              <p class="text-muted mb-2">Upload PDFs or scans</p>
+              <button type="button" class="btn btn-sm btn-outline-secondary">Upload</button>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <label class="form-label">Workflow Templates</label>
+            <div class="border rounded p-3 text-center">
+              <p class="text-muted mb-2">Attach lab sheets</p>
+              <button type="button" class="btn btn-sm btn-outline-secondary">Attach</button>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <label class="form-label">Repository Links</label>
+            <div class="border rounded p-3 text-center">
+              <p class="text-muted mb-2">EarthChem, SESAR, etc.</p>
+              <button type="button" class="btn btn-sm btn-outline-secondary">Link</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="d-flex justify-content-between">
+      <button type="button" class="btn btn-outline-secondary" onclick="history.back()">Cancel</button>
+      <button type="submit" class="btn btn-primary">Create Project</button>
+    </div>
+  </form>
+{% endblock %}

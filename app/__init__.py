@@ -14,4 +14,7 @@ def create_app(config_class="config.DevelopmentConfig"):
     from app.projects import bp as projects_bp
     app.register_blueprint(projects_bp, url_prefix='/projects')
 
+    from app.samples import bp as samples_bp
+    app.register_blueprint(samples_bp, url_prefix='/samples')
+
     return app

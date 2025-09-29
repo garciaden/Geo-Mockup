@@ -1,0 +1,115 @@
+{% extends "base.html" %}
+{% block content %}
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h1 class="mb-1">Bulk Upload Samples</h1>
+      <p class="text-muted mb-0">Use spreadsheet templates aligned with lab best practices for rapid ingestion.</p>
+    </div>
+    <div class="d-flex flex-wrap gap-2">
+      <a href="{{ url_for('samples.sample_register') }}" class="btn btn-outline-primary">Switch to Single Entry</a>
+    </div>
+  </div>
+
+  <div class="card shadow-sm border-0 mb-4">
+    <div class="card-body">
+      <h5 class="card-title">Step 1 · Download Templates</h5>
+      <p class="text-muted">Each workbook reflects the spreadsheets Stephen’s team already maintains.</p>
+      <div class="row g-3">
+        {% for template in templates %}
+          <div class="col-md-4">
+            <div class="border rounded d-flex justify-content-between align-items-center p-3">
+              <div>
+                <strong>{{ template.name }}</strong><br>
+                <small class="text-muted">{{ template.filename }}</small>
+              </div>
+              <button class="btn btn-sm btn-outline-secondary">Download</button>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
+  <div class="card shadow-sm border-0 mb-4">
+    <div class="card-body">
+      <h5 class="card-title">Step 2 · Upload Completed Workbook</h5>
+      <div class="row g-4 align-items-center">
+        <div class="col-md-8">
+          <div class="border rounded p-4 text-center">
+            <p class="text-muted mb-2">Drag & drop CSV/XLSX/ODS files or browse</p>
+            <button class="btn btn-outline-secondary">Select Files</button>
+            <div class="form-text mt-2">Multiple files allowed (Collection, Processing, Analysis).</div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="border rounded p-3 h-100">
+            <h6>Supported Fields</h6>
+            <ul class="list-unstyled small mb-0">
+              <li>• Site, station, stratigraphic interval</li>
+              <li>• Date/time, GPS coordinates, collected by</li>
+              <li>• Sieve fractions, mass balance</li>
+              <li>• Particle size distribution & densities</li>
+              <li>• Raw & processed geochemical files</li>
+              <li>• Correlation checklist entries</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card shadow-sm border-0 mb-4">
+    <div class="card-body">
+      <h5 class="card-title">Step 3 · Validate Required Metadata</h5>
+      <p class="text-muted">The system checks each record against minimum metadata before import.</p>
+      <div class="table-responsive">
+        <table class="table align-middle">
+          <thead>
+            <tr>
+              <th>Sample ID</th>
+              <th>Collection Metadata</th>
+              <th>Processing</th>
+              <th>Geochemistry</th>
+              <th>Correlation</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>CULS-2025-051</td>
+              <td><span class="badge bg-success">Complete</span></td>
+              <td><span class="badge bg-success">Complete</span></td>
+              <td><span class="badge bg-warning text-dark">Missing standards</span></td>
+              <td><span class="badge bg-secondary">Optional</span></td>
+              <td><button class="btn btn-sm btn-outline-primary">Fix</button></td>
+            </tr>
+            <tr>
+              <td>CULS-2025-052</td>
+              <td><span class="badge bg-warning text-dark">No GPS</span></td>
+              <td><span class="badge bg-secondary">Pending</span></td>
+              <td><span class="badge bg-secondary">Pending</span></td>
+              <td><span class="badge bg-secondary">Pending</span></td>
+              <td><button class="btn btn-sm btn-outline-primary">Add Metadata</button></td>
+            </tr>
+            <tr>
+              <td>CULS-2025-053</td>
+              <td><span class="badge bg-success">Complete</span></td>
+              <td><span class="badge bg-success">Complete</span></td>
+              <td><span class="badge bg-success">Complete</span></td>
+              <td><span class="badge bg-success">Complete</span></td>
+              <td><span class="badge bg-success">Ready</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="alert alert-info" role="alert">
+        <strong>Auto-prompts:</strong> Missing GPS, mass balance, or reference standards trigger guided fixes before import.
+      </div>
+    </div>
+  </div>
+
+  <div class="d-flex justify-content-end gap-2">
+    <button class="btn btn-outline-secondary" onclick="history.back()">Cancel</button>
+    <button class="btn btn-primary">Import Samples</button>
+  </div>
+{% endblock %}

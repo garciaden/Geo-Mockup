@@ -122,3 +122,24 @@ def project_detail(project_id):
     if not project:
         return "Project not found", 404
     return render_template("projects/project_detail.html", title=project["title"], project=project)
+
+
+@bp.route('/new')
+def project_create():
+    funding_agencies = [
+        "NSF",
+        "USGS",
+        "NASA",
+        "NOAA",
+        "Internal / Institutional",
+    ]
+    visibility_options = [
+        {"value": "internal", "label": "Internal only"},
+        {"value": "public", "label": "Public metadata (title + PI)"},
+    ]
+    return render_template(
+        "projects/project_create.html",
+        title="Create Project",
+        funding_agencies=funding_agencies,
+        visibility_options=visibility_options,
+    )

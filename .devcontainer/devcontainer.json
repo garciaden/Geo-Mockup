@@ -2,7 +2,7 @@
   "name": "Flask Dev Container",
   "dockerFile": "../Dockerfile",
   "context": "..",
-  "appPort": ["5000:5000"],
+  "runArgs": ["-p", "5050:5000"], // Map host port 5050 to container port 5000 (change left port if needed)
   "remoteUser": "devuser",
   "mounts": [
     "source=${localWorkspaceFolder},target=/app,type=bind"
