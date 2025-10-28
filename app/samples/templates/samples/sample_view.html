@@ -1,0 +1,722 @@
+{% extends "base.html" %}
+
+{% block content %}
+  {% set sample_name = sample.name|default(sample.sample_code|default('Sample')) %}
+  {% set project = None %}
+  {% if sample.project is defined and sample.project %}
+    {% set project = sample.project %}
+  {% elif sample.projects is defined and sample.projects %}
+    {% set project = sample.projects[0].project %}
+  {% endif %}
+  {% set analyses = sample.analyses|default([], true) %}
+  {% set linked_people = sample.linked_people|default([], true) %}
+  {% set related_samples = sample.related_samples|default([], true) %}
+  {% set qc_flags = sample.qc_flags|default([], true) %}
+  {% set physical_data = sample.physical_analysis|default({}, true) %}
+  {% set micro_data = sample.physical_microanalysis|default({}, true) %}
+  {% set geochem_data = sample.geochemical_analysis|default({}, true) %}
+  {% set attachments = sample.attachments_list|default([], true) %}
+  {% set audit_log = sample.audit_log|default([], true) %}
+
+  <nav aria-label="breadcrumb" class="mb-3">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item">
+        <a href="{{ url_for('main.index') }}">
+          <i class="bi bi-house"></i> Home
+        </a>
+      </li>
+      <li class="breadcrumb-item">
+        <a href="{{ url_for('projects.project_list') }}">Projects</a>
+      </li>
+      <li class="breadcrumb-item">
+        {% if project %}
+          <a href="{{ url_for('projects.project_detail', project_id=project.id) }}">{{ project.title }}</a>
+        {% else %}
+          <span class="text-muted">Unassigned Project</span>
+        {% endif %}
+      </li>
+      <li class="breadcrumb-item active" aria-current="page">{{ sample_name }}</li>
+    </ol>
+  </nav>
+
+  <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center align-items-start gap-3 mb-4">
+    <div>
+      <div class="d-flex align-items-center gap-2 flex-wrap">
+        <h1 class="mb-0">{{ sample_name }}</h1>
+        {% if sample.sample_code %}
+          <span class="badge bg-secondary text-uppercase">{{ sample.sample_code }}</span>
+        {% endif %}
+      </div>
+      {% if sample.sample_code %}
+        <small class="text-muted">Sample ID: {{ sample.sample_code }}</small>
+      {% endif %}
+    </div>
+    <div class="d-flex flex-wrap gap-2">
+      {% if can_edit_sample %}
+        <a class="btn btn-outline-primary" href="{{ sample.edit_url|default('#') }}">
+          <i class="bi bi-pencil"></i> Edit Sample
+        </a>
+      {% endif %}
+      {% if can_manage_analysis %}
+        <a class="btn btn-outline-success" href="{{ sample.add_analysis_url|default('#') }}">
+          <i class="bi bi-plus-circle"></i> Add Analysis
+        </a>
+      {% endif %}
+      <button class="btn btn-outline-secondary" type="button">
+        <i class="bi bi-file-earmark-arrow-down"></i> Export Data
+      </button>
+      {% if can_flag_samples %}
+        <button class="btn btn-outline-warning" type="button">
+          <i class="bi bi-flag"></i> Flag for Review
+        </button>
+      {% endif %}
+    </div>
+  </div>
+
+  {% if sample.is_flagged_for_review %}
+    <div class="alert alert-warning d-flex align-items-center gap-2" role="alert">
+      <i class="bi bi-exclamation-triangle-fill"></i>
+      <div>
+        This sample is currently <strong>flagged for review</strong>. Please review outstanding QC notes before releasing data.
+      </div>
+    </div>
+  {% endif %}
+
+  {% if sample.status in ['archived', 'missing'] %}
+    <div class="alert alert-danger d-flex align-items-center gap-2" role="alert">
+      <i class="bi bi-archive"></i>
+      <div>
+        Status: {{ sample.status|capitalize }}. Editing is restricted until the sample is reactivated.
+      </div>
+    </div>
+  {% endif %}
+
+  <div class="row g-4 mb-5">
+    <div class="col-12">
+      <div class="card border-0 shadow-sm mb-4">
+        <div class="card-header bg-white border-bottom-0">
+          <h6 class="text-uppercase text-muted mb-0">Metadata Summary</h6>
+        </div>
+        <div class="card-body">
+          <div class="row gy-3">
+            <div class="col-md-6 col-lg-4">
+              <div class="small text-muted">Sample ID</div>
+              <div class="fw-semibold">{{ sample.sample_code|default('Not assigned') }}</div>
+            </div>
+            <div class="col-md-6 col-lg-4">
+              <div class="small text-muted">
+                Project
+                <i class="bi bi-info-circle" data-bs-toggle="tooltip" title="Project associated with this sample"></i>
+              </div>
+              <div>
+                {% if project %}
+                  <a href="{{ url_for('projects.project_detail', project_id=project.id) }}">{{ project.title }}</a>
+                {% else %}
+                  <span class="text-muted">Unassigned</span>
+                {% endif %}
+              </div>
+            </div>
+            <div class="col-md-6 col-lg-4">
+              <div class="small text-muted">Date Collected</div>
+              <div>{{ sample.date_collected|default(sample.collected_on_display|default('Not recorded')) }}</div>
+            </div>
+            <div class="col-md-6 col-lg-4">
+              <div class="small text-muted">
+                Collected By
+                <i class="bi bi-info-circle" data-bs-toggle="tooltip" title="Primary field collector"></i>
+              </div>
+              <div>
+                {% set collector = sample.collected_by %}
+                {% if collector %}
+                  {% if collector.profile_url is defined %}
+                    <a href="{{ collector.profile_url }}">{{ collector.full_name|default(collector.name|default(collector)) }}</a>
+                  {% elif collector.full_name is defined %}
+                    <a href="{{ collector.view_url|default('#') }}">{{ collector.full_name }}</a>
+                  {% elif collector is string %}
+                    {{ collector }}
+                  {% elif collector is sequence %}
+                    {% for person in collector %}
+                      {% if not loop.first %}, {% endif %}
+                      {% if person.profile_url is defined %}
+                        <a href="{{ person.profile_url }}">{{ person.full_name|default(person.name|default(person)) }}</a>
+                      {% else %}
+                        {{ person.full_name|default(person.name|default(person)) }}
+                      {% endif %}
+                    {% endfor %}
+                  {% else %}
+                    {{ collector }}
+                  {% endif %}
+                {% else %}
+                  <span class="text-muted">Not recorded</span>
+                {% endif %}
+              </div>
+            </div>
+            <div class="col-md-6 col-lg-4">
+              <div class="small text-muted">IGSN</div>
+              <div>{{ sample.igsn|default('Not assigned') }}</div>
+            </div>
+            <div class="col-md-6 col-lg-4">
+              <div class="small text-muted">Location</div>
+              <div>
+                {{ sample.location.summary|default(sample.location_name|default(sample.site.site_name|default('Not recorded'))) }}
+              </div>
+            </div>
+            <div class="col-md-6 col-lg-4">
+              <div class="small text-muted">Description</div>
+              <div>{{ sample.description|default('No description provided') }}</div>
+            </div>
+            <div class="col-md-6 col-lg-4">
+              <div class="small text-muted">Status</div>
+              <div>
+                <span class="badge bg-light text-dark border">{{ sample.status|default('Unknown')|capitalize }}</span>
+              </div>
+            </div>
+            <div class="col-md-6 col-lg-4">
+              <div class="small text-muted">Storage Location</div>
+              <div>{{ sample.storage_location|default('Not tracked') }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <ul class="nav nav-tabs flex-nowrap overflow-auto mb-3" id="sampleViewTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+          <button class="nav-link active" id="overview-tab" data-bs-toggle="tab" data-bs-target="#overview" type="button" role="tab">Overview</button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" id="physical-analysis-tab" data-bs-toggle="tab" data-bs-target="#physical-analysis" type="button" role="tab">Physical Analysis</button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" id="microanalysis-tab" data-bs-toggle="tab" data-bs-target="#microanalysis" type="button" role="tab">Physical Microanalysis</button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" id="geochem-tab" data-bs-toggle="tab" data-bs-target="#geochem" type="button" role="tab">Geochemical Analysis</button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" id="files-tab" data-bs-toggle="tab" data-bs-target="#files" type="button" role="tab">Files &amp; Images</button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" id="history-tab" data-bs-toggle="tab" data-bs-target="#history" type="button" role="tab">History / Audit Log</button>
+        </li>
+      </ul>
+
+      <div class="tab-content" id="sampleViewTabsContent">
+        <div class="tab-pane fade show active" id="overview" role="tabpanel" aria-labelledby="overview-tab">
+          <div class="card border-0 shadow-sm mb-4">
+            <div class="card-body">
+              <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5 class="mb-0">Sample Metadata</h5>
+                {% if can_edit_sample %}
+                  <a class="btn btn-sm btn-outline-primary" href="{{ sample.edit_url|default('#') }}">
+                    <i class="bi bi-pencil-square"></i> Edit Fields
+                  </a>
+                {% endif %}
+              </div>
+              <div class="table-responsive">
+                <table class="table table-sm align-middle">
+                  <tbody>
+                    <tr>
+                      <th scope="row">Field Team</th>
+                      <td>{{ sample.field_team|default('Not recorded') }}</td>
+                    </tr>
+                    <tr>
+                      <th scope="row">Stratigraphic Context</th>
+                      <td>{{ sample.stratigraphy|default(sample.site.stratum|default('Not recorded')) }}</td>
+                    </tr>
+                    <tr>
+                      <th scope="row">
+                        Preservation Notes
+                        <i class="bi bi-info-circle" data-bs-toggle="tooltip" title="Handling, storage, and contamination notes"></i>
+                      </th>
+                      <td>{{ sample.preservation_notes|default('None') }}</td>
+                    </tr>
+                    <tr>
+                      <th scope="row">Current Workflow Step</th>
+                      <td>{{ sample.workflow_step|default('Not assigned') }}</td>
+                    </tr>
+                    <tr>
+                      <th scope="row">Parent Sample</th>
+                      <td>
+                        {% if sample.parent_sample %}
+                          <a href="{{ sample.parent_sample.url|default(url_for('samples.sample_detail', sample_code=sample.parent_sample.sample_code)) }}">
+                            {{ sample.parent_sample.sample_code|default(sample.parent_sample.name|default('View sample')) }}
+                          </a>
+                        {% else %}
+                          <span class="text-muted">None</span>
+                        {% endif %}
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              {% if can_create_subsample %}
+                <button class="btn btn-outline-success">
+                  <i class="bi bi-diagram-3"></i> Add Subsample
+                </button>
+              {% endif %}
+            </div>
+          </div>
+
+          <div class="card border-0 shadow-sm mb-4">
+            <div class="card-header bg-white border-0 d-flex justify-content-between align-items-center">
+              <h5 class="mb-0">Associated Analyses</h5>
+              {% if can_manage_analysis %}
+                <div class="btn-group btn-group-sm">
+                  <button class="btn btn-outline-primary" type="button"><i class="bi bi-upload"></i> Import Template</button>
+                  <button class="btn btn-outline-secondary" type="button"><i class="bi bi-download"></i> Export Data</button>
+                </div>
+              {% endif %}
+            </div>
+            <div class="card-body">
+              <div class="table-responsive">
+                <table class="table table-hover table-sm align-middle">
+                  <thead class="table-light">
+                    <tr>
+                      <th scope="col">Analysis</th>
+                      <th scope="col">Instrument / Lab</th>
+                      <th scope="col">Date</th>
+                      <th scope="col">Analyst</th>
+                      <th scope="col">Status</th>
+                      <th scope="col" class="text-end">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for analysis in analyses %}
+                      <tr>
+                        <td>{{ analysis.type }}</td>
+                        <td>{{ analysis.instrument|default('Not assigned') }}</td>
+                        <td>{{ analysis.analysis_date|default('—') }}</td>
+                        <td>{{ analysis.analyst.full_name|default(analysis.analyst_name|default('Not linked')) }}</td>
+                        <td>
+                          <span class="badge bg-light text-dark border">{{ analysis.status|default('Pending')|capitalize }}</span>
+                        </td>
+                        <td class="text-end">
+                          {% if can_manage_analysis %}
+                            <a class="link-primary me-3" href="{{ analysis.edit_url|default('#') }}">Edit</a>
+                            <a class="link-danger" href="#">Delete</a>
+                          {% else %}
+                            <span class="text-muted">No actions</span>
+                          {% endif %}
+                        </td>
+                      </tr>
+                    {% else %}
+                      <tr>
+                        <td colspan="6" class="text-center text-muted py-4">
+                          No analyses linked yet.
+                        </td>
+                      </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white border-0 d-flex justify-content-between align-items-center">
+              <h5 class="mb-0">Linked People</h5>
+              {% if can_edit_sample %}
+                <button class="btn btn-sm btn-outline-primary" type="button">
+                  <i class="bi bi-person-plus"></i> Link Person
+                </button>
+              {% endif %}
+            </div>
+            <div class="card-body">
+              <div class="table-responsive">
+                <table class="table table-sm align-middle">
+                  <thead class="table-light">
+                    <tr>
+                      <th scope="col">Name</th>
+                      <th scope="col">Role</th>
+                      <th scope="col">Institution</th>
+                      <th scope="col">Contact</th>
+                      <th scope="col" class="text-end">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for person in linked_people %}
+                      <tr>
+                        <td>
+                          <a href="{{ person.profile_url|default('#') }}">{{ person.full_name|default(person.name|default('Unnamed')) }}</a>
+                        </td>
+                        <td>{{ person.role|default('—') }}</td>
+                        <td>{{ person.institution|default('—') }}</td>
+                        <td>
+                          {% if person.email %}
+                            <a href="mailto:{{ person.email }}">{{ person.email }}</a>
+                          {% else %}
+                            <span class="text-muted">—</span>
+                          {% endif %}
+                        </td>
+                        <td class="text-end">
+                          {% if can_edit_sample %}
+                            <a class="link-primary me-3" href="#">Edit</a>
+                            <a class="link-danger" href="#">Delete</a>
+                          {% else %}
+                            <span class="text-muted">No actions</span>
+                          {% endif %}
+                        </td>
+                      </tr>
+                    {% else %}
+                      <tr>
+                        <td colspan="5" class="text-center text-muted py-4">No people linked yet.</td>
+                      </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="tab-pane fade" id="physical-analysis" role="tabpanel" aria-labelledby="physical-analysis-tab">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <h5 class="mb-0">Physical Analysis</h5>
+            <div class="btn-group">
+              <button class="btn btn-outline-primary btn-sm" type="button"><i class="bi bi-upload"></i> Import Template</button>
+              <button class="btn btn-outline-secondary btn-sm" type="button"><i class="bi bi-download"></i> Export Data</button>
+            </div>
+          </div>
+          <div class="accordion" id="physicalAnalysisAccordion">
+            {% set physical_sections = [
+              ('macro', 'Macro Characteristics'),
+              ('componentry', 'Componentry'),
+              ('particle_size', 'Particle Size Distribution'),
+              ('max_clast', 'Maximum Clast Measurements'),
+              ('density', 'Density'),
+              ('core', 'Core'),
+              ('cryptotephra', 'Cryptotephra')
+            ] %}
+            {% for key, label in physical_sections %}
+              {% set entries = physical_data[key]|default([], true) %}
+              <div class="accordion-item">
+                <h2 class="accordion-header" id="heading-{{ key }}">
+                  <button class="accordion-button {% if not loop.first %}collapsed{% endif %}" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-{{ key }}" aria-expanded="{{ 'true' if loop.first else 'false' }}" aria-controls="collapse-{{ key }}">
+                    {{ label }}
+                  </button>
+                </h2>
+                <div id="collapse-{{ key }}" class="accordion-collapse collapse {% if loop.first %}show{% endif %}" aria-labelledby="heading-{{ key }}" data-bs-parent="#physicalAnalysisAccordion">
+                  <div class="accordion-body">
+                    <div class="d-flex justify-content-end gap-2 mb-3">
+                      {% if can_manage_analysis %}
+                        <button class="btn btn-sm btn-outline-success" type="button"><i class="bi bi-plus-circle"></i> Add Entry</button>
+                      {% endif %}
+                      <button class="btn btn-sm btn-outline-primary" type="button"><i class="bi bi-upload"></i> Import Template</button>
+                      <button class="btn btn-sm btn-outline-secondary" type="button"><i class="bi bi-download"></i> Export Data</button>
+                    </div>
+                    <div class="table-responsive">
+                      <table class="table table-sm align-middle">
+                        <thead class="table-light">
+                          <tr>
+                            <th scope="col">Parameter</th>
+                            <th scope="col">Value</th>
+                            <th scope="col">Unit</th>
+                            <th scope="col">Method</th>
+                            <th scope="col">Notes</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {% for entry in entries %}
+                            <tr>
+                              <td>{{ entry.parameter }}</td>
+                              <td>{{ entry.value }}</td>
+                              <td>{{ entry.unit|default('—') }}</td>
+                              <td>{{ entry.method|default('—') }}</td>
+                              <td>{{ entry.notes|default('—') }}</td>
+                            </tr>
+                          {% else %}
+                            <tr>
+                              <td colspan="5" class="text-center text-muted py-4">
+                                No records logged yet. Use <strong>Add Entry</strong> or <strong>Import Template</strong> to populate this section.
+                              </td>
+                            </tr>
+                          {% endfor %}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+        </div>
+
+        <div class="tab-pane fade" id="microanalysis" role="tabpanel" aria-labelledby="microanalysis-tab">
+          <div class="accordion" id="microanalysisAccordion">
+            {% set imaging_sections = [
+              ('optical', 'Optical Microscope'),
+              ('electron', 'Electron Imaging / Element Mapping'),
+              ('tomography', 'Tomography'),
+              ('other', 'Other Imaging')
+            ] %}
+            {% for key, label in imaging_sections %}
+              {% set section = micro_data[key]|default({}, true) %}
+              {% set thumbnails = section.images|default([], true) %}
+              {% set records = section.metadata|default([], true) %}
+              <div class="accordion-item">
+                <h2 class="accordion-header" id="heading-micro-{{ key }}">
+                  <button class="accordion-button {% if not loop.first %}collapsed{% endif %}" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-micro-{{ key }}" aria-expanded="{{ 'true' if loop.first else 'false' }}" aria-controls="collapse-micro-{{ key }}">
+                    {{ label }}
+                  </button>
+                </h2>
+                <div id="collapse-micro-{{ key }}" class="accordion-collapse collapse {% if loop.first %}show{% endif %}" aria-labelledby="heading-micro-{{ key }}" data-bs-parent="#microanalysisAccordion">
+                  <div class="accordion-body">
+                    <div class="d-flex justify-content-end gap-2 mb-3">
+                      <button class="btn btn-sm btn-outline-success" type="button"><i class="bi bi-cloud-upload"></i> Upload Image</button>
+                      {% if can_manage_analysis %}
+                        <button class="btn btn-sm btn-outline-primary" type="button"><i class="bi bi-arrow-repeat"></i> Replace</button>
+                      {% endif %}
+                      <button class="btn btn-sm btn-outline-secondary" type="button"><i class="bi bi-download"></i> Export Metadata</button>
+                    </div>
+                    <div class="row row-cols-2 row-cols-md-4 g-3 mb-4">
+                      {% for image in thumbnails %}
+                        <div class="col">
+                          <div class="card h-100 border shadow-sm">
+                            <img src="{{ image.thumbnail_url|default(image.url|default(sample.placeholder_image_url|default('https://placehold.co/200x150'))) }}" class="card-img-top" alt="{{ image.caption|default('Imaging output') }}">
+                            <div class="card-body p-2">
+                              <small class="fw-semibold d-block text-truncate">{{ image.caption|default('Untitled image') }}</small>
+                              <small class="text-muted">{{ image.acquired_on|default('—') }}</small>
+                            </div>
+                          </div>
+                        </div>
+                      {% else %}
+                        <div class="col">
+                          <div class="border rounded text-center text-muted d-flex flex-column justify-content-center align-items-center py-4 h-100">
+                            <i class="bi bi-images fs-3 mb-2"></i>
+                            <div>No images uploaded.</div>
+                          </div>
+                        </div>
+                      {% endfor %}
+                    </div>
+                    <div class="table-responsive">
+                      <table class="table table-sm align-middle">
+                        <thead class="table-light">
+                          <tr>
+                            <th scope="col">Instrument</th>
+                            <th scope="col">Magnification</th>
+                            <th scope="col">Operator</th>
+                            <th scope="col">Acquisition Date</th>
+                            <th scope="col">Notes</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {% for record in records %}
+                            <tr>
+                              <td>{{ record.instrument|default('—') }}</td>
+                              <td>{{ record.magnification|default('—') }}</td>
+                              <td>{{ record.operator|default('—') }}</td>
+                              <td>{{ record.acquired_on|default('—') }}</td>
+                              <td>{{ record.notes|default('—') }}</td>
+                            </tr>
+                          {% else %}
+                            <tr>
+                              <td colspan="5" class="text-center text-muted py-4">
+                                No metadata recorded.
+                              </td>
+                            </tr>
+                          {% endfor %}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+        </div>
+
+        <div class="tab-pane fade" id="geochem" role="tabpanel" aria-labelledby="geochem-tab">
+          <div class="row g-3">
+            {% set geochem_sections = [
+              ('micro_xrf', 'Micro XRF'),
+              ('whole_xrf', 'Whole XRF'),
+              ('icp_ms', 'ICP-MS'),
+              ('epma', 'EPMA / SEM'),
+              ('la_icp_ms', 'LA-ICP-MS'),
+              ('sims', 'SIMS'),
+              ('geochronology', 'Geochronology')
+            ] %}
+            {% for key, label in geochem_sections %}
+              {% set runs = geochem_data[key]|default([], true) %}
+              <div class="col-12">
+                <div class="card border-0 shadow-sm">
+                  <div class="card-header bg-white border-0 d-flex justify-content-between align-items-center">
+                    <h6 class="mb-0">{{ label }}</h6>
+                    <div class="btn-group btn-group-sm">
+                      {% if can_manage_analysis %}
+                        <button class="btn btn-outline-success" type="button"><i class="bi bi-plus-circle"></i> Add Run</button>
+                      {% endif %}
+                      <button class="btn btn-outline-primary" type="button"><i class="bi bi-upload"></i> Import Template</button>
+                      <button class="btn btn-outline-secondary" type="button"><i class="bi bi-download"></i> Export Data</button>
+                    </div>
+                  </div>
+                  <div class="card-body">
+                    <div class="table-responsive">
+                      <table class="table table-sm align-middle">
+                        <thead class="table-light">
+                          <tr>
+                            <th scope="col">Element</th>
+                            <th scope="col">Value</th>
+                            <th scope="col">Unit</th>
+                            <th scope="col">Uncertainty</th>
+                            <th scope="col">QC Flag</th>
+                            <th scope="col">Notes</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {% for run in runs %}
+                            <tr>
+                              <td>{{ run.element }}</td>
+                              <td>{{ run.value }}</td>
+                              <td>{{ run.unit|default('—') }}</td>
+                              <td>{{ run.uncertainty|default('—') }}</td>
+                              <td>
+                                <span class="badge {% if run.qc_flag == 'pass' %}bg-success{% elif run.qc_flag == 'fail' %}bg-danger{% else %}bg-secondary{% endif %}">
+                                  {{ run.qc_flag|default('n/a')|upper }}
+                                </span>
+                              </td>
+                              <td>{{ run.notes|default('—') }}</td>
+                            </tr>
+                          {% else %}
+                            <tr>
+                              <td colspan="6" class="text-center text-muted py-4">No geochemical runs recorded.</td>
+                            </tr>
+                          {% endfor %}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+        </div>
+
+        <div class="tab-pane fade" id="files" role="tabpanel" aria-labelledby="files-tab">
+          <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white border-0 d-flex justify-content-between align-items-center">
+              <h5 class="mb-0">Files &amp; Images</h5>
+              <div class="btn-group btn-group-sm">
+                <button class="btn btn-outline-success" type="button"><i class="bi bi-upload"></i> Upload File</button>
+                <button class="btn btn-outline-primary" type="button"><i class="bi bi-arrow-repeat"></i> Replace</button>
+                <button class="btn btn-outline-secondary" type="button"><i class="bi bi-download"></i> Download</button>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                  <thead class="table-light">
+                    <tr>
+                      <th scope="col">File</th>
+                      <th scope="col">Type</th>
+                      <th scope="col">Uploaded By</th>
+                      <th scope="col">Upload Date</th>
+                      <th scope="col">Description</th>
+                      <th scope="col" class="text-end">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for file in attachments %}
+                      <tr>
+                        <td>
+                          <i class="bi bi-file-earmark"></i>
+                          <a href="{{ file.download_url|default(file.url|default('#')) }}">{{ file.filename }}</a>
+                        </td>
+                        <td>{{ file.type|default('—')|upper }}</td>
+                        <td>{{ file.uploader.full_name|default(file.uploader_name|default('—')) }}</td>
+                        <td>{{ file.uploaded_on|default('—') }}</td>
+                        <td>{{ file.description|default('—') }}</td>
+                        <td class="text-end">
+                          <a class="link-secondary me-3" href="{{ file.download_url|default(file.url|default('#')) }}">Download</a>
+                          {% if can_edit_sample %}
+                            <a class="link-danger" href="#">Delete</a>
+                          {% endif %}
+                        </td>
+                      </tr>
+                    {% else %}
+                      <tr>
+                        <td colspan="6" class="text-center text-muted py-4">
+                          No files uploaded yet.
+                        </td>
+                      </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="tab-pane fade" id="history" role="tabpanel" aria-labelledby="history-tab">
+          <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white border-0">
+              <div class="d-flex flex-column flex-lg-row gap-3 justify-content-between">
+                <div>
+                  <h5 class="mb-1">History / Audit Log</h5>
+                  <small class="text-muted">All events are time-stamped and immutable.</small>
+                </div>
+                <form class="d-flex flex-wrap gap-2">
+                  <div class="input-group input-group-sm">
+                    <label class="input-group-text" for="historyEventType">Event</label>
+                    <select class="form-select" id="historyEventType">
+                      <option value="">All</option>
+                      <option value="metadata">Metadata</option>
+                      <option value="analysis">Analysis</option>
+                      <option value="files">Files</option>
+                      <option value="status">Status</option>
+                    </select>
+                  </div>
+                  <div class="input-group input-group-sm">
+                    <label class="input-group-text" for="historyDateFrom">From</label>
+                    <input type="date" class="form-control" id="historyDateFrom">
+                  </div>
+                  <div class="input-group input-group-sm">
+                    <label class="input-group-text" for="historyDateTo">To</label>
+                    <input type="date" class="form-control" id="historyDateTo">
+                  </div>
+                  <button class="btn btn-sm btn-outline-secondary" type="button"><i class="bi bi-funnel"></i> Apply</button>
+                </form>
+              </div>
+            </div>
+            <div class="card-body">
+              <ul class="list-group list-group-flush">
+                {% for event in audit_log %}
+                  <li class="list-group-item px-0">
+                    <div class="d-flex justify-content-between flex-wrap gap-2">
+                      <div>
+                        <strong>{{ event.timestamp }}</strong>
+                        <span class="text-muted">by {{ event.user.full_name|default(event.user_name|default('System')) }}</span>
+                        <span class="badge bg-light text-dark border ms-2 text-uppercase">{{ event.event_type }}</span>
+                      </div>
+                      <div class="text-muted">
+                        <i class="bi bi-clock-history"></i>
+                        {{ event.relative_time|default('just now') }}
+                      </div>
+                    </div>
+                    <div class="mt-1">
+                      <div>{{ event.summary }}</div>
+                      {% if event.details %}
+                        <pre class="bg-light border rounded p-2 mt-2 mb-0 small">{{ event.details }}</pre>
+                      {% endif %}
+                    </div>
+                  </li>
+                {% else %}
+                  <li class="list-group-item px-0 text-center text-muted py-4">
+                    No history recorded yet.
+                  </li>
+                {% endfor %}
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const tooltipTriggerList = Array.from(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    tooltipTriggerList.forEach((tooltipTriggerEl) => {
+      new bootstrap.Tooltip(tooltipTriggerEl);
+    });
+  </script>
+{% endblock %}

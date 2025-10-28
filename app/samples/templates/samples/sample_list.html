@@ -135,7 +135,7 @@
             </div>
           </div>
           <div class="card-footer bg-white border-0 d-flex justify-content-between">
-            <small class="text-muted">Attachments: {{ sample.attachments.images|length + sample.attachments.instrument_logs|length + sample.attachments.notes|length }}</small>
+            <small class="text-muted">Attachments: {{ sample.attachment_summary.total }}</small>
             <a href="{{ url_for('samples.sample_detail', sample_code=sample.sample_code) }}" class="btn btn-sm btn-outline-primary">View Detail</a>
           </div>
         </div>
