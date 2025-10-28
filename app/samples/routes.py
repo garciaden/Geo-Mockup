@@ -687,32 +687,32 @@ def _build_analyses(sample):
     primary = collectors[0] if collectors else ALLOWED_PEOPLE[0]
 
     processing = sample.get("processing") or {}
-    if processing.get("mass_entries"):
-        status = "completed" if processing.get("derived_metrics") else "in progress"
-        analyses.append(
-            {
-                "type": "Particle Size Workflow",
-                "instrument": "Sieving & balance station",
-                "analysis_date": sample.get("collected_on_display", "—"),
-                "analyst": {"full_name": primary},
-                "status": status,
-                "url": "#",
-                "edit_url": "#",
-            }
-        )
+    # if processing.get("mass_entries"):
+    #     status = "completed" if processing.get("derived_metrics") else "in progress"
+    #     analyses.append(
+    #         {
+    #             "type": "Particle Size Workflow",
+    #             "instrument": "Sieving & balance station",
+    #             "analysis_date": sample.get("collected_on_display", "—"),
+    #             "analyst": {"full_name": primary},
+    #             "status": status,
+    #             "url": "#",
+    #             "edit_url": "#",
+    #         }
+    #     )
 
-    for session in sample.get("imaging", {}).get("sessions", []) or []:
-        analyses.append(
-            {
-                "type": f"Imaging · {session.get('instrument', 'Session')}",
-                "instrument": session.get("instrument"),
-                "analysis_date": session.get("date", "—"),
-                "analyst": {"full_name": session.get("operator", "—")},
-                "status": session.get("status", "pending").lower(),
-                "url": "#",
-                "edit_url": "#",
-            }
-        )
+    # for session in sample.get("imaging", {}).get("sessions", []) or []:
+    #     analyses.append(
+    #         {
+    #             "type": f"Imaging · {session.get('instrument', 'Session')}",
+    #             "instrument": session.get("instrument"),
+    #             "analysis_date": session.get("date", "—"),
+    #             "analyst": {"full_name": session.get("operator", "—")},
+    #             "status": session.get("status", "pending").lower(),
+    #             "url": "#",
+    #             "edit_url": "#",
+    #         }
+    #     )
 
     geochem = sample.get("geochemistry") or {}
     if geochem.get("processed_uploads"):
