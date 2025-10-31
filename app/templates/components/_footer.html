@@ -1,0 +1,96 @@
+<footer class="bg-dark text-white mt-5 pt-4 pb-3">
+  <div class="container">
+    <div class="row">
+      <!-- About Section -->
+      <div class="col-md-4 mb-3">
+        <h5 class="text-uppercase mb-3">About CULS</h5>
+        <p class="text-light">
+          Concord University Laboratory Software (CULS) is an open-source LIMS for managing tephra research projects, samples, and analytical workflows.
+        </p>
+        <div class="d-flex gap-3">
+          <a href="#" class="text-white" title="GitHub">
+            <i class="bi bi-github fs-4"></i>
+          </a>
+          <a href="#" class="text-white" title="Documentation">
+            <i class="bi bi-book fs-4"></i>
+          </a>
+          <a href="#" class="text-white" title="Email">
+            <i class="bi bi-envelope fs-4"></i>
+          </a>
+        </div>
+      </div>
+
+      <!-- Quick Links -->
+      <div class="col-md-4 mb-3">
+        <h5 class="text-uppercase mb-3">Quick Links</h5>
+        <ul class="list-unstyled">
+          <li class="mb-2">
+            <a href="{{ url_for('main.index') }}" class="text-light text-decoration-none">
+              <i class="bi bi-house-door me-2"></i>Home
+            </a>
+          </li>
+          <li class="mb-2">
+            <a href="{{ url_for('projects.project_list') }}" class="text-light text-decoration-none">
+              <i class="bi bi-folder me-2"></i>Projects
+            </a>
+          </li>
+          <li class="mb-2">
+            <a href="{{ url_for('samples.sample_list') }}" class="text-light text-decoration-none">
+              <i class="bi bi-box-seam me-2"></i>Samples
+            </a>
+          </li>
+          <li class="mb-2">
+            <a href="{{ url_for('auth.login') }}" class="text-light text-decoration-none">
+              <i class="bi bi-box-arrow-in-right me-2"></i>Login
+            </a>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Resources -->
+      <div class="col-md-4 mb-3">
+        <h5 class="text-uppercase mb-3">Resources</h5>
+        <ul class="list-unstyled">
+          <li class="mb-2">
+            <a href="#" class="text-light text-decoration-none">
+              <i class="bi bi-file-text me-2"></i>Documentation
+            </a>
+          </li>
+          <li class="mb-2">
+            <a href="#" class="text-light text-decoration-none">
+              <i class="bi bi-question-circle me-2"></i>Help & Support
+            </a>
+          </li>
+          <li class="mb-2">
+            <a href="#" class="text-light text-decoration-none">
+              <i class="bi bi-shield-check me-2"></i>Privacy Policy
+            </a>
+          </li>
+          <li class="mb-2">
+            <a href="#" class="text-light text-decoration-none">
+              <i class="bi bi-info-circle me-2"></i>About
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <hr class="border-secondary my-3">
+
+    <!-- Copyright -->
+    <div class="row">
+      <div class="col-md-6 text-center text-md-start">
+        <p class="mb-0">
+          <small>&copy; 2025 Concord University. All rights reserved.</small>
+        </p>
+      </div>
+      <div class="col-md-6 text-center text-md-end">
+        <p class="mb-0">
+          <small>
+            Built with <i class="bi bi-heart-fill text-danger"></i> by CU Denver Senior Design Team
+          </small>
+        </p>
+      </div>
+    </div>
+  </div>
+</footer>

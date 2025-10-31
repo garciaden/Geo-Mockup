@@ -1,0 +1,41 @@
+<nav class="navbar navbar-expand-lg" style="background-color:#7b2b43;">
+  <div class="container-fluid">
+    <!-- Logo/Home Button -->
+    <a class="navbar-brand d-flex align-items-center text-white" href="{{ url_for('main.index') }}" title="Home">
+      <img src="{{ url_for('static', filename='logo.png') }}"
+           alt="Home" width="50" height="50"
+           class="d-inline-block align-text-top me-2">
+      <span class="fw-bold d-none d-lg-inline">Concord University Lab Software</span>
+    </a>
+
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <!-- Search Bar -->
+      <form class="d-flex mx-auto my-2 my-lg-0" style="max-width: 500px; width: 100%;" method="GET" action="{{ url_for('main.index') }}">
+        <div class="input-group">
+          <input class="form-control"
+                 type="search"
+                 name="search"
+                 placeholder="Search by project name or owner..."
+                 aria-label="Search"
+                 value="{{ request.args.get('search', '') }}">
+          <button class="btn btn-light" type="submit">
+            <i class="bi bi-search"></i>
+          </button>
+        </div>
+      </form>
+
+      <!-- Login/Register Button -->
+      <ul class="navbar-nav ms-auto">
+        <li class="nav-item">
+          <a class="btn btn-outline-light" href="{{ url_for('auth.login') }}">
+            <i class="bi bi-box-arrow-in-right me-1"></i>Login / Register
+          </a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
