@@ -1,6 +1,6 @@
-# Concord University Lab Software (CULS) Mockup
+# Lab Software Mockup
 
-This is a basic Flask web application that serves as a UI and workflow template for the Concord University Lab Software. It demonstrates a modular Flask structure, Bootstrap-based UI, and Docker-based development workflow.
+This is a basic Flask web application that serves as a UI and workflow template for our senior design lab software project. It demonstrates a modular Flask structure, Bootstrap-based UI, and Docker-based development workflow.
 
 ## Features
 
@@ -33,6 +33,11 @@ This is a basic Flask web application that serves as a UI and workflow template 
 │   │   ├── routes.py
 │   │   └── templates/
 │   │       └── projects/
+│   ├── samples/
+│   │   ├── __init__.py
+│   │   ├── routes.py
+│   │   └── templates/
+│   │       └── samples/
 │   ├── static/
 │   │   ├── favicon.png
 │   │   └── logo.png
@@ -107,7 +112,7 @@ If you have the Dev Containers extension installed:
 1. **Clone the repository:**
    ```sh
    git clone <repo-url>
-   cd culs_mockup
+   cd lab_software_mockup
    ```
 
 2. **Install dependencies:**
@@ -115,10 +120,7 @@ If you have the Dev Containers extension installed:
    pip install -r requirements.txt
    ```
 
-3. **Set environment variables:**
-   - Copy `example.env` to `.env` and edit as needed.
-
-4. **Run the app:**
+3. **Run the app:**
    ```sh
    python myapp.py
    ```
@@ -131,15 +133,3 @@ If you have the Dev Containers extension installed:
 - **Add templates:** Place in `app/templates/` for site-wide templates or the template folder inside of each blueprint subdiretory.
 - **Add static files:** Place in `app/static/`.
 - **Environment config:** Add a `.env` file for secrets and settings.
-
-
-## License
-
-**This project is an unlicensed mockup created solely for demonstration and prototyping purposes.**
-
-- No license is granted for production, commercial, or academic use.
-- The authors are not responsible for any use, modification, or distribution of this code.
-
----
-
-*Created for Concord University Lab Software UI prototyping.*
