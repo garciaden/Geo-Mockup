@@ -1,123 +1,207 @@
 {% extends "base.html" %}
 
 {% block content %}
-  <div class="p-5 mb-4 bg-light rounded-3 shadow-sm">
-    <div class="container-fluid py-5 text-center">
+  <!-- Welcome Header -->
+  <div class="p-4 mb-4 bg-light rounded-3 shadow-sm">
+    <div class="container-fluid text-center">
       <h1 class="display-5 fw-bold">Concord Lab Manager</h1>
-      <p class="col-md-10 mx-auto fs-4">
-        Track people, projects, samples, and workflows in one place. Guided metadata checklists, bulk uploads,
-        and repository exports follow best-practice spreadsheets.
+      <p class="fs-5 text-muted">
+        Browse public projects and discover research from the Concord University Laboratory
       </p>
-      <div class="d-flex flex-wrap justify-content-center gap-2">
-        <a href="{{ url_for('projects.project_create') }}" class="btn btn-primary btn-lg">+ New Project</a>
-        <a href="{{ url_for('samples.sample_register') }}" class="btn btn-outline-primary btn-lg">Register Sample</a>
-        <a href="{{ url_for('samples.sample_bulk_upload') }}" class="btn btn-outline-primary btn-lg">⬆️ Bulk Upload Samples</a>
-        <a href="{{ url_for('samples.sample_list') }}" class="btn btn-outline-secondary btn-lg">Start Workflow</a>
+    </div>
+  </div>
+
+  <!-- Projects Per Page Selector and Results Info -->
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <div>
+      <h4 class="mb-0">
+        {% if search_query %}
+          Search Results for "{{ search_query }}"
+        {% else %}
+          Public Projects
+        {% endif %}
+      </h4>
+      <small class="text-muted">Showing {{ pagination.total_projects }} project(s)</small>
+    </div>
+
+    <!-- Projects Per Page Selector -->
+    <form method="GET" action="{{ url_for('main.index') }}" class="d-flex align-items-center gap-2">
+      {% if search_query %}
+        <input type="hidden" name="search" value="{{ search_query }}">
+      {% endif %}
+      {% if sort_info.sort_by %}
+        <input type="hidden" name="sort_by" value="{{ sort_info.sort_by }}">
+      {% endif %}
+      {% if sort_info.sort_order %}
+        <input type="hidden" name="sort_order" value="{{ sort_info.sort_order }}">
+      {% endif %}
+      <label for="per_page" class="form-label mb-0 text-nowrap">Projects per page:</label>
+      <select name="per_page" id="per_page" class="form-select form-select-sm" style="width: auto;" onchange="this.form.submit()">
+        <option value="5" {% if pagination.per_page == 5 %}selected{% endif %}>5</option>
+        <option value="10" {% if pagination.per_page == 10 %}selected{% endif %}>10</option>
+        <option value="15" {% if pagination.per_page == 15 %}selected{% endif %}>15</option>
+        <option value="20" {% if pagination.per_page == 20 %}selected{% endif %}>20</option>
+        <option value="25" {% if pagination.per_page == 25 %}selected{% endif %}>25</option>
+        <option value="50" {% if pagination.per_page == 50 %}selected{% endif %}>50</option>
+      </select>
+    </form>
+  </div>
+
+  <!-- Sort Controls -->
+  <div class="card mb-3">
+    <div class="card-body py-2">
+      <div class="row align-items-center">
+        <div class="col-auto">
+          <strong class="text-muted">Sort by:</strong>
+        </div>
+        <div class="col-auto">
+          {% set next_title_order = 'desc' if sort_info.sort_by == 'title' and sort_info.sort_order == 'asc' else 'asc' %}
+          <a href="{{ url_for('main.index', sort_by='title', sort_order=next_title_order, per_page=pagination.per_page, search=search_query, page=1) }}"
+             class="btn btn-sm {% if sort_info.sort_by == 'title' %}btn-primary{% else %}btn-outline-secondary{% endif %}">
+            <i class="bi bi-folder me-1"></i>Project Name
+            {% if sort_info.sort_by == 'title' %}
+              {% if sort_info.sort_order == 'asc' %}
+                <i class="bi bi-arrow-up"></i>
+              {% else %}
+                <i class="bi bi-arrow-down"></i>
+              {% endif %}
+            {% endif %}
+          </a>
+        </div>
+        <div class="col-auto">
+          {% set next_owner_order = 'desc' if sort_info.sort_by == 'owner' and sort_info.sort_order == 'asc' else 'asc' %}
+          <a href="{{ url_for('main.index', sort_by='owner', sort_order=next_owner_order, per_page=pagination.per_page, search=search_query, page=1) }}"
+             class="btn btn-sm {% if sort_info.sort_by == 'owner' %}btn-primary{% else %}btn-outline-secondary{% endif %}">
+            <i class="bi bi-person-circle me-1"></i>Project Owner
+            {% if sort_info.sort_by == 'owner' %}
+              {% if sort_info.sort_order == 'asc' %}
+                <i class="bi bi-arrow-up"></i>
+              {% else %}
+                <i class="bi bi-arrow-down"></i>
+              {% endif %}
+            {% endif %}
+          </a>
+        </div>
+        <div class="col-auto ms-auto">
+          <small class="text-muted">
+            {% if sort_info.sort_by == 'title' %}
+              Sorted by Project Name ({{ 'A-Z' if sort_info.sort_order == 'asc' else 'Z-A' }})
+            {% elif sort_info.sort_by == 'owner' %}
+              Sorted by Owner ({{ 'A-Z' if sort_info.sort_order == 'asc' else 'Z-A' }})
+            {% endif %}
+          </small>
+        </div>
       </div>
     </div>
   </div>
 
-  <div class="row text-center mb-5 g-3">
-    <div class="col-md-4">
-      <div class="card shadow-sm border-start border-primary border-3 h-100">
-        <div class="card-body">
-          <h5 class="card-title">Projects in Progress</h5>
-          <p class="display-6">{{ dashboard.projects_in_progress }}</p>
-          <small class="text-muted">Ongoing + in review projects running workflows.</small>
-        </div>
-      </div>
-    </div>
-    <div class="col-md-4">
-      <div class="card shadow-sm border-start border-success border-3 h-100">
-        <div class="card-body">
-          <h5 class="card-title">Samples Registered</h5>
-          <p class="display-6">{{ dashboard.samples_registered }}</p>
-          <small class="text-muted">Single entries + legacy imports.</small>
-        </div>
-      </div>
-    </div>
-    <div class="col-md-4">
-      <div class="card shadow-sm border-start border-warning border-3 h-100">
-        <div class="card-body">
-          <h5 class="card-title">Active Workflow Steps</h5>
-          <p class="display-6">{{ dashboard.active_workflows }}</p>
-          <small class="text-muted">Processing, imaging, geochem, and correlation tasks underway.</small>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="row g-4 mb-5">
-    <div class="col-lg-6">
-      <div class="card shadow-sm border-0 h-100">
-        <div class="card-body">
-          <div class="d-flex justify-content-between align-items-center mb-3">
-            <h5 class="card-title mb-0">Projects in Progress</h5>
-            <a href="{{ url_for('projects.project_list') }}" class="btn btn-sm btn-outline-secondary">View All</a>
+  <!-- Project List - Compact Format -->
+  {% if projects %}
+    <div class="list-group mb-4">
+      {% for project in projects %}
+        <div class="list-group-item list-group-item-action py-2">
+          <div class="row align-items-center">
+            <!-- Project Name (40%) -->
+            <div class="col-md-4">
+              <strong class="d-block text-truncate" title="{{ project.title }}">
+                <i class="bi bi-folder text-primary me-1"></i>{{ project.title }}
+              </strong>
+            </div>
+            <!-- Project Owner (20%) -->
+            <div class="col-md-2">
+              <small class="text-muted">
+                <i class="bi bi-person-circle me-1"></i>{{ project.owner }}
+              </small>
+            </div>
+            <!-- Description (30%) -->
+            <div class="col-md-4">
+              <small class="text-muted text-truncate d-block" title="{{ project.description }}">
+                {{ project.description[:80] }}{% if project.description|length > 80 %}...{% endif %}
+              </small>
+            </div>
+            <!-- View Button (10%) -->
+            <div class="col-md-2 text-end">
+              <a href="{{ url_for('projects.project_detail', project_id=project.id) }}"
+                 class="btn btn-sm btn-primary">
+                <i class="bi bi-eye me-1"></i>View
+              </a>
+            </div>
           </div>
-          <ul class="list-group list-group-flush">
-            {% for project in dashboard.recent_projects %}
-              <li class="list-group-item d-flex justify-content-between align-items-start">
-                <div>
-                  <strong>{{ project.title }}</strong><br>
-                  <small class="text-muted">PI {{ project.owner }} · {{ project.type }}</small>
-                </div>
-                <span class="badge bg-warning text-dark">{{ project.status }}</span>
-              </li>
-            {% endfor %}
-          </ul>
         </div>
-      </div>
+      {% endfor %}
     </div>
-    <div class="col-lg-6">
-      <div class="card shadow-sm border-0 h-100">
-        <div class="card-body">
-          <div class="d-flex justify-content-between align-items-center mb-3">
-            <h5 class="card-title mb-0">Fresh Samples</h5>
-            <a href="{{ url_for('samples.sample_list') }}" class="btn btn-sm btn-outline-secondary">Open Registry</a>
-          </div>
-          <ul class="list-group list-group-flush">
-            {% for sample in dashboard.recent_samples %}
-              <li class="list-group-item d-flex justify-content-between align-items-start">
-                <div>
-                  <strong>{{ sample.sample_code }}</strong><br>
-                  <small class="text-muted">{{ sample.collected_on_display }} · {{ sample.nickname }}</small>
-                </div>
-                <span class="badge bg-info">{{ sample.workflow_status[0].state }}</span>
-              </li>
-            {% endfor %}
-          </ul>
-        </div>
-      </div>
-    </div>
-  </div>
 
-  <h2 class="mb-3">Recent Activity</h2>
-  <ul class="list-group shadow-sm">
-    <li class="list-group-item d-flex justify-content-between align-items-center">
-      <div>
-        <strong>Carlos Cortes Garcia</strong> validated geochemical standards for <em>CULS-2025-018</em>
+    <!-- Pagination Controls -->
+    {% if pagination.total_pages > 1 %}
+      <nav aria-label="Project pagination">
+        <ul class="pagination justify-content-center">
+          <!-- Previous Button -->
+          <li class="page-item {% if not pagination.has_prev %}disabled{% endif %}">
+            <a class="page-link"
+               href="{% if pagination.has_prev %}{{ url_for('main.index', page=pagination.prev_page, per_page=pagination.per_page, search=search_query, sort_by=sort_info.sort_by, sort_order=sort_info.sort_order) }}{% else %}#{% endif %}"
+               {% if not pagination.has_prev %}tabindex="-1" aria-disabled="true"{% endif %}>
+              Previous
+            </a>
+          </li>
+
+          <!-- Page Numbers -->
+          {% for page_num in range(1, pagination.total_pages + 1) %}
+            {% if page_num == pagination.page %}
+              <li class="page-item active" aria-current="page">
+                <span class="page-link">{{ page_num }}</span>
+              </li>
+            {% elif page_num == 1 or page_num == pagination.total_pages or (page_num >= pagination.page - 2 and page_num <= pagination.page + 2) %}
+              <li class="page-item">
+                <a class="page-link" href="{{ url_for('main.index', page=page_num, per_page=pagination.per_page, search=search_query, sort_by=sort_info.sort_by, sort_order=sort_info.sort_order) }}">
+                  {{ page_num }}
+                </a>
+              </li>
+            {% elif page_num == pagination.page - 3 or page_num == pagination.page + 3 %}
+              <li class="page-item disabled">
+                <span class="page-link">...</span>
+              </li>
+            {% endif %}
+          {% endfor %}
+
+          <!-- Next Button -->
+          <li class="page-item {% if not pagination.has_next %}disabled{% endif %}">
+            <a class="page-link"
+               href="{% if pagination.has_next %}{{ url_for('main.index', page=pagination.next_page, per_page=pagination.per_page, search=search_query, sort_by=sort_info.sort_by, sort_order=sort_info.sort_order) }}{% else %}#{% endif %}"
+               {% if not pagination.has_next %}tabindex="-1" aria-disabled="true"{% endif %}>
+              Next
+            </a>
+          </li>
+        </ul>
+      </nav>
+
+      <!-- Prominent Next Page Button -->
+      <div class="text-center mt-4 mb-5">
+        {% if pagination.has_next %}
+          <a href="{{ url_for('main.index', page=pagination.next_page, per_page=pagination.per_page, search=search_query, sort_by=sort_info.sort_by, sort_order=sort_info.sort_order) }}"
+             class="btn btn-primary btn-lg">
+            <i class="bi bi-arrow-right-circle me-2"></i>Load Next Page
+          </a>
+          <p class="text-muted mt-2 mb-0">
+            <small>Page {{ pagination.page }} of {{ pagination.total_pages }}</small>
+          </p>
+        {% else %}
+          <div class="alert alert-success d-inline-block" role="alert">
+            <i class="bi bi-check-circle me-2"></i>You've reached the end of the list!
+          </div>
+        {% endif %}
       </div>
-      <span class="badge bg-secondary">2025-09-26 10:15 AM</span>
-    </li>
-    <li class="list-group-item d-flex justify-content-between align-items-center">
-      <div>
-        <strong>Matthew Kenner</strong> bulk uploaded 8 samples to <em>Volcanic Glass Imaging</em>
-      </div>
-      <span class="badge bg-secondary">2025-09-25 03:40 PM</span>
-    </li>
-    <li class="list-group-item d-flex justify-content-between align-items-center">
-      <div>
-        <strong>Ian Keitlan</strong> closed processing checklist for <em>CULS-2025-001</em>
-      </div>
-      <span class="badge bg-secondary">2025-09-24 09:05 AM</span>
-    </li>
-    <li class="list-group-item d-flex justify-content-between align-items-center">
-      <div>
-        <strong>Killian Bertsch</strong> uploaded SEM session to <em>Tephra Analysis</em>
-      </div>
-      <span class="badge bg-secondary">2025-09-23 01:22 PM</span>
-    </li>
-  </ul>
+    {% endif %}
+
+  {% else %}
+    <!-- No Projects Found -->
+    <div class="alert alert-info text-center" role="alert">
+      <i class="bi bi-info-circle me-2"></i>
+      {% if search_query %}
+        No projects found matching "{{ search_query }}". Try a different search term.
+      {% else %}
+        No projects available at this time.
+      {% endif %}
+    </div>
+  {% endif %}
 
 {% endblock %}
