@@ -1,9 +1,9 @@
 #!/bin/bash
 set -e
 
-echo ">>> Pulling latest changes from master..."
+echo ">>> Pulling latest changes from main..."
 git fetch origin
-git reset --hard origin/master
+git reset --hard origin/main
 
 echo ">>> Building and deploying Docker container..."
 docker compose down
