@@ -10,13 +10,13 @@ from app.projects.routes import projects as project_catalog
 samples = [
     {
         "id": 1,
-        "sample_code": "CULS-2025-001",
+        "sample_code": "JL20-01A-1",
         "nickname": "Glass shard concentrate",
         "collected_on": date(2025, 9, 15),
         "collected_by": ["Carlos Cortes Garcia", "Matthew Kenner"],
         "status": "active",
         "storage_location": "Cold Storage · Rack A3",
-        "igsn": "IGSN:CULS-2025-001",
+    "igsn": "IGSN:JL20-01A-1",
         "description": "Glass-rich tephra concentrate archived for comparison workflows.",
         "is_flagged_for_review": False,
         "site": {
@@ -39,8 +39,8 @@ samples = [
         ],
         "attachments": {
             "images": [
-                {"filename": "CULS-2025-001_overview.jpg", "caption": "Sample bag with GPS puck"},
-                {"filename": "CULS-2025-001_field-closeup.jpg", "caption": "Fresh surface at collection point"}
+                {"filename": "JL20-01A-1_overview.jpg", "caption": "Sample bag with GPS puck"},
+                {"filename": "JL20-01A-1_field-closeup.jpg", "caption": "Fresh surface at collection point"}
             ],
             "notes": [
                 "Collected immediately below weathered contact; moisture high.",
@@ -74,7 +74,7 @@ samples = [
             "clast_size": "Coarse ash / lapilli",
             "componentry_summary": "Glass shards 70%, crystals 20%, lithics 10%",
             "uploads": [
-                {"filename": "CULS-2025-001_graincount.xlsx", "status": "Uploaded"}
+                {"filename": "JL20-01A-1_graincount.xlsx", "status": "Uploaded"}
             ]
         },
         "imaging": {
@@ -91,7 +91,7 @@ samples = [
             "next_steps": "Schedule EPMA session for glass chemistry"
         },
         "geochemistry": {
-            "raw_uploads": ["CULS-2025-001_XRF_raw.xlsx"],
+            "raw_uploads": ["JL20-01A-1_XRF_raw.xlsx"],
             "processed_uploads": [],
             "reference_standards": ["GSR-5", "SCO-1"],
             "qa_notes": "Awaiting standard drift check",
@@ -100,7 +100,7 @@ samples = [
         "correlation": {
             "targets": [
                 {
-                    "sample_code": "CULS-2025-018",
+                    "sample_code": "JL20-01A-2",
                     "project": "Summit Lake Core",
                     "basis": "Glass shard major oxides",
                     "confidence": "High"
@@ -114,7 +114,7 @@ samples = [
             "summary": "Preliminary correlation to lacustrine tephra at Summit Lake pending geochem validation."
         },
         "workflow_status": [
-            {"name": "Collection", "state": "Complete", "updated": "2025-09-15"},
+        {"name": "Collection", "state": "Complete", "updated": "2025-09-15"},
             {"name": "Processing", "state": "In Progress", "updated": "2025-09-20"},
             {"name": "Physical Analysis", "state": "Queued", "updated": None},
             {"name": "Geochemical Analysis", "state": "Pending", "updated": None}
@@ -122,13 +122,13 @@ samples = [
     },
     {
         "id": 2,
-        "sample_code": "CULS-2025-018",
+    "sample_code": "JL20-01A-2",
         "nickname": "Lake core fraction",
         "collected_on": date(2025, 8, 2),
         "collected_by": ["Ian Keitlan"],
         "status": "in review",
         "storage_location": "Cold Storage · Rack B1",
-        "igsn": "IGSN:CULS-2025-018",
+    "igsn": "IGSN:JL20-01A-2",
         "description": "Fine sediment fraction pulled from Summit Lake piston core.",
         "is_flagged_for_review": True,
         "site": {
@@ -151,7 +151,7 @@ samples = [
         ],
         "attachments": {
             "images": [
-                {"filename": "CULS-2025-018_core-box.jpg", "caption": "Core sections prior to splitting"}
+                {"filename": "JL20-01A-2_core-box.jpg", "caption": "Core sections prior to splitting"}
             ],
             "notes": [
                 "Stored at 4°C. Pending FTIR spectrum.",
@@ -187,8 +187,8 @@ samples = [
             "clast_size": "Silt",
             "componentry_summary": "Organic matter 12%, diatoms 25%, mineral fines 63%",
             "uploads": [
-                {"filename": "CULS-2025-018_psd.csv", "status": "Uploaded"},
-                {"filename": "CULS-2025-018_density.xlsx", "status": "Pending QA"}
+                {"filename": "JL20-01A-2_psd.csv", "status": "Uploaded"},
+                {"filename": "JL20-01A-2_density.xlsx", "status": "Pending QA"}
             ]
         },
         "imaging": {
@@ -196,8 +196,8 @@ samples = [
             "next_steps": "Consider micro-CT for porosity assessment"
         },
         "geochemistry": {
-            "raw_uploads": ["CULS-2025-018_ICPMS_raw.xlsx"],
-            "processed_uploads": ["CULS-2025-018_ICPMS_processed.xlsx"],
+            "raw_uploads": ["JL20-01A-2_ICPMS_raw.xlsx"],
+            "processed_uploads": ["JL20-01A-2_ICPMS_processed.xlsx"],
             "reference_standards": ["GSR-5", "BHVO-2"],
             "qa_notes": "Standard recoveries within ±3%",
             "auto_processing": "Manual review required for organic-rich fractions"
@@ -205,7 +205,7 @@ samples = [
         "correlation": {
             "targets": [
                 {
-                    "sample_code": "CULS-2025-001",
+                    "sample_code": "JL20-01A-1",
                     "project": "Tephra Analysis",
                     "basis": "TiO2 vs FeO*/MgO plot",
                     "confidence": "Moderate"
@@ -227,13 +227,13 @@ samples = [
     },
     {
         "id": 3,
-        "sample_code": "CULS-2025-034",
+        "sample_code": "JL20-01A-3",
         "nickname": "Legacy thin section",
-        "collected_on": date(1998, 6, 12),
+    "collected_on": date(1998, 6, 12),
         "collected_by": ["Killian Bertsch"],
         "status": "archived",
         "storage_location": "Legacy Slide Drawer 4",
-        "igsn": "IGSN:CULS-1998-034",
+    "igsn": "IGSN:JL20-01A-3",
         "description": "Legacy thin section digitized from departmental archive.",
         "is_flagged_for_review": False,
         "site": {
@@ -266,7 +266,7 @@ samples = [
                     "date": "2025-09-05",
                     "operator": "Matthew Kenner",
                     "settings": "Cross-polars, 4x & 10x",
-                    "files": ["legacy_thinsection_scan.pdf"],
+                    "files": ["JL20-01A-3_legacy_thinsection_scan.pdf"],
                     "status": "Digitized"
                 }
             ],

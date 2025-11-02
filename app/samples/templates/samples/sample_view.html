@@ -58,15 +58,15 @@
         </a>
       {% endif %}
       {% if can_manage_analysis %}
-        <a class="btn btn-outline-success" href="{{ sample.add_analysis_url|default('#') }}">
+        <a class="btn btn-outline-primary" href="{{ sample.add_analysis_url|default('#') }}">
           <i class="bi bi-plus-circle"></i> Add Analysis
         </a>
       {% endif %}
-      <button class="btn btn-outline-secondary" type="button">
+      <button class="btn btn-outline-primary" type="button">
         <i class="bi bi-file-earmark-arrow-down"></i> Export Data
       </button>
       {% if can_flag_samples %}
-        <button class="btn btn-outline-warning" type="button">
+        <button class="btn btn-outline-primary" type="button">
           <i class="bi bi-flag"></i> Flag for Review
         </button>
       {% endif %}
@@ -250,67 +250,12 @@
                 </table>
               </div>
               {% if can_create_subsample %}
-                <button class="btn btn-outline-success">
+                <button class="btn btn-outline-primary">
                   <i class="bi bi-diagram-3"></i> Add Subsample
                 </button>
               {% endif %}
             </div>
           </div>
-
-          <!-- <div class="card border-0 shadow-sm mb-4">
-            <div class="card-header bg-white border-0 d-flex justify-content-between align-items-center">
-              <h5 class="mb-0">Associated Analyses</h5>
-              {% if can_manage_analysis %}
-                <div class="btn-group btn-group-sm">
-                  <button class="btn btn-outline-primary" type="button"><i class="bi bi-upload"></i> Import Template</button>
-                  <button class="btn btn-outline-secondary" type="button"><i class="bi bi-download"></i> Export Data</button>
-                </div>
-              {% endif %}
-            </div>
-            <div class="card-body">
-              <div class="table-responsive">
-                <table class="table table-hover table-sm align-middle">
-                  <thead class="table-light">
-                    <tr>
-                      <th scope="col">Analysis</th>
-                      <th scope="col">Instrument / Lab</th>
-                      <th scope="col">Date</th>
-                      <th scope="col">Analyst</th>
-                      <th scope="col">Status</th>
-                      <th scope="col" class="text-end">Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {% for analysis in analyses %}
-                      <tr>
-                        <td>{{ analysis.type }}</td>
-                        <td>{{ analysis.instrument|default('Not assigned') }}</td>
-                        <td>{{ analysis.analysis_date|default('—') }}</td>
-                        <td>{{ analysis.analyst.full_name|default(analysis.analyst_name|default('Not linked')) }}</td>
-                        <td>
-                          <span class="badge bg-light text-dark border">{{ analysis.status|default('Pending')|capitalize }}</span>
-                        </td>
-                        <td class="text-end">
-                          {% if can_manage_analysis %}
-                            <a class="link-primary me-3" href="{{ analysis.edit_url|default('#') }}">Edit</a>
-                            <a class="link-danger" href="#">Delete</a>
-                          {% else %}
-                            <span class="text-muted">No actions</span>
-                          {% endif %}
-                        </td>
-                      </tr>
-                    {% else %}
-                      <tr>
-                        <td colspan="6" class="text-center text-muted py-4">
-                          No analyses linked yet.
-                        </td>
-                      </tr>
-                    {% endfor %}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </div> -->
 
           <div class="card border-0 shadow-sm">
             <div class="card-header bg-white border-0 d-flex justify-content-between align-items-center">
