@@ -371,7 +371,7 @@ def _build_linked_people(sample):
                         "id": f"{project['id']}-pi",
                         "full_name": owner,
                         "role": "Project PI",
-                        "institution": "Concord University",
+                        "institution": "[LAB NAME]",
                         "email": _default_email(owner),
                         "profile_url": "#",
                     }
@@ -399,7 +399,7 @@ def _build_linked_people(sample):
                 "id": f"{sample.get('sample_code', 'sample')}-fallback",
                 "full_name": fallback,
                 "role": "Data Steward",
-                "institution": "Concord University",
+                "institution": "[LAB NAME]",
                 "email": _default_email(fallback),
                 "profile_url": "#",
             }
