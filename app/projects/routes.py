@@ -112,6 +112,11 @@ projects = [
     }
 ]
 
+# We are going to have to change this to be the homepage (where the projects are now)
+@bp.route('/')
+def project_list():
+    return render_template("projects/project_list.html", title="Projects", projects=projects)
+
 @bp.route('/<int:project_id>')
 def project_detail(project_id):
     project = next((p for p in projects if p["id"] == project_id), None)
