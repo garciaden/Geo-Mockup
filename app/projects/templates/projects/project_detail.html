@@ -1,148 +1,666 @@
 {% extends "base.html" %}
 {% block content %}
-  <h1 class="mb-4">{{ project.title }}</h1>
+  <!-- Project Header Section -->
+  <div class="card shadow-sm border-0 mb-4">
+    <div class="card-body">
+      <div class="row align-items-start">
+        <div class="col-md-8">
+          <div class="d-flex align-items-center mb-2">
+            <h1 class="mb-0 me-3">{{ project.title }}</h1>
+            <!-- Visibility Status Icon -->
+            {% if project.visibility == 'Public' %}
+              <i class="bi bi-globe text-success fs-4" title="Public Project" data-bs-toggle="tooltip"></i>
+            {% elif project.visibility == 'Restricted' %}
+              <i class="bi bi-lock text-warning fs-4" title="Restricted Access" data-bs-toggle="tooltip"></i>
+            {% elif project.visibility == 'Hidden' %}
+              <i class="bi bi-eye-slash text-secondary fs-4" title="Hidden Project" data-bs-toggle="tooltip"></i>
+            {% endif %}
+          </div>
+          <p class="text-muted mb-3">{{ project.description }}</p>
+          <div class="row g-2">
+            <div class="col-auto">
+              <strong>Project ID:</strong> <span class="badge bg-light text-dark border">{{ project.id or 'PRJ-2025-001' }}</span>
+            </div>
+            <div class="col-auto">
+              <strong>Owner:</strong> <span class="text-primary">{{ project.owner }}</span>
+            </div>
+            <div class="col-auto">
+              <strong>Last Updated:</strong> {{ project.last_updated }}
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="d-flex gap-2 justify-content-end">
+            <button class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#settingsModal" title="Manage Project Settings">
+              <i class="bi bi-gear"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 
-  <!-- Tabs -->
-  <ul class="nav nav-tabs mb-3" id="projectTabs" role="tablist">
-    <li class="nav-item" role="presentation">
-      <button class="nav-link active" id="overview-tab" data-bs-toggle="tab" data-bs-target="#overview" type="button" role="tab">
-        Overview
-      </button>
-    </li>
-    <li class="nav-item" role="presentation">
-      <button class="nav-link" id="samples-tab" data-bs-toggle="tab" data-bs-target="#samples" type="button" role="tab">
-        Samples
-      </button>
-    </li>
-    <li class="nav-item" role="presentation">
-      <button class="nav-link" id="files-tab" data-bs-toggle="tab" data-bs-target="#files" type="button" role="tab">
-        Files
-      </button>
-    </li>
-    <li class="nav-item" role="presentation">
-      <button class="nav-link" id="activity-tab" data-bs-toggle="tab" data-bs-target="#activity" type="button" role="tab">
-        Activity Log
-      </button>
-    </li>
-  </ul>
+  <!-- Sample Management Action Buttons -->
+  <div class="card shadow-sm border-0 mb-3">
+    <div class="card-body py-2">
+      <div class="d-flex flex-wrap gap-2 align-items-center">
+        <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#addSampleModal">
+          <i class="bi bi-plus-circle me-1"></i>Add New Sample
+        </button>
+        <button class="btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#bulkUploadModal">
+          <i class="bi bi-upload me-1"></i>Import Samples (Bulk)
+        </button>
+        <button class="btn btn-outline-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#exportModal">
+          <i class="bi bi-download me-1"></i>Export Project Data
+        </button>
+        <div class="ms-auto text-muted small">
+          <i class="bi bi-info-circle me-1"></i>Showing 8 samples | Total: 8
+        </div>
+      </div>
+    </div>
+  </div>
 
-  <!-- Tab Content -->
-  <div class="tab-content">
+  <!-- Project Samples Table -->
+  <div class="card shadow-sm border-0 mb-4">
+    <div class="card-body p-0">
+      <div class="table-responsive">
+        <table class="table table-sm table-hover mb-0" style="font-size: 0.9rem;">
+          <thead class="table-light">
+            <tr>
+              <th class="py-2">Sample Name</th>
+              <th class="py-2">Sample ID</th>
+              <th class="py-2">Collection Date</th>
+              <th class="py-2 text-center">Physical Analysis</th>
+              <th class="py-2 text-center">Microanalysis</th>
+              <th class="py-2 text-center">Geochemical</th>
+              <th class="py-2 text-center">Files</th>
+              <th class="py-2 text-center">History</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- Sample Row 1 -->
+            <tr>
+              <td class="py-2">
+                <a href="{{ url_for('samples.sample_detail', sample_code='S-2025-001') }}" class="text-decoration-none fw-semibold">
+                  Mount St. Helens Tephra Layer A
+                </a>
+              </td>
+              <td class="py-2"><span class="badge bg-light text-dark border">S-2025-001</span></td>
+              <td class="py-2">2025-09-15</td>
+              <td class="py-2 text-center">
+                <button class="btn btn-outline-secondary btn-sm" title="Physical Analysis - No Data" data-bs-toggle="tooltip">
+                  <i class="bi bi-beaker"></i>
+                </button>
+              </td>
+              <td class="py-2 text-center">
+                <button class="btn btn-outline-secondary btn-sm" title="Microanalysis - No Data" data-bs-toggle="tooltip">
+                  <i class="bi bi-grid-3x3-gap"></i>
+                </button>
+              </td>
+              <td class="py-2 text-center">
+                <button class="btn btn-outline-secondary btn-sm" title="Geochemical Analysis - No Data" data-bs-toggle="tooltip">
+                  <i class="bi bi-bar-chart"></i>
+                </button>
+              </td>
+              <td class="py-2 text-center">
+                <button class="btn btn-outline-secondary btn-sm" title="Files & Images - No Data" data-bs-toggle="tooltip">
+                  <i class="bi bi-images"></i>
+                </button>
+              </td>
+              <td class="py-2 text-center">
+                <button class="btn btn-outline-secondary btn-sm" title="History / Audit Log" data-bs-toggle="tooltip">
+                  <i class="bi bi-clock-history"></i>
+                </button>
+              </td>
+            </tr>
 
-    <!-- Overview -->
-    <div class="tab-pane fade show active" id="overview" role="tabpanel">
-      <div class="card shadow-sm mb-4">
+            <!-- Sample Row 2 -->
+            <tr>
+              <td class="py-2">
+                <a href="{{ url_for('samples.sample_detail', sample_code='S-2025-002') }}" class="text-decoration-none fw-semibold">
+                  Volcanic Ash Sample - Site B
+                </a>
+              </td>
+              <td class="py-2"><span class="badge bg-light text-dark border">S-2025-002</span></td>
+              <td class="py-2">2025-09-16</td>
+              <td class="py-2 text-center">
+                <button class="btn btn-success btn-sm" title="Physical Analysis - Data Present" data-bs-toggle="tooltip">
+                  <i class="bi bi-beaker"></i>
+                </button>
+              </td>
+              <td class="py-2 text-center">
+                <button class="btn btn-success btn-sm" title="Microanalysis - Data Present" data-bs-toggle="tooltip">
+                  <i class="bi bi-grid-3x3-gap"></i>
+                </button>
+              </td>
+              <td class="py-2 text-center">
+                <button class="btn btn-success btn-sm" title="Geochemical Analysis - Data Present" data-bs-toggle="tooltip">
+                  <i class="bi bi-bar-chart"></i>
+                </button>
+              </td>
+              <td class="py-2 text-center">
+                <button class="btn btn-success btn-sm" title="Files & Images - Data Present" data-bs-toggle="tooltip">
+                  <i class="bi bi-images"></i>
+                </button>
+              </td>
+              <td class="py-2 text-center">
+                <button class="btn btn-outline-secondary btn-sm" title="History / Audit Log" data-bs-toggle="tooltip">
+                  <i class="bi bi-clock-history"></i>
+                </button>
+              </td>
+            </tr>
+
+            <!-- Sample Row 3 -->
+            <tr>
+              <td class="py-2">
+                <a href="{{ url_for('samples.sample_detail', sample_code='S-2025-003') }}" class="text-decoration-none fw-semibold">
+                  Pumice Fragment Collection
+                </a>
+              </td>
+              <td class="py-2"><span class="badge bg-light text-dark border">S-2025-003</span></td>
+              <td class="py-2">2025-09-18</td>
+              <td class="py-2 text-center">
+                <button class="btn btn-success btn-sm" title="Physical Analysis - Data Present" data-bs-toggle="tooltip">
+                  <i class="bi bi-beaker"></i>
+                </button>
+              </td>
+              <td class="py-2 text-center">
+                <button class="btn btn-outline-secondary btn-sm" title="Microanalysis - No Data" data-bs-toggle="tooltip">
+                  <i class="bi bi-grid-3x3-gap"></i>
+                </button>
+              </td>
+              <td class="py-2 text-center">
+                <button class="btn btn-outline-secondary btn-sm" title="Geochemical Analysis - No Data" data-bs-toggle="tooltip">
+                  <i class="bi bi-bar-chart"></i>
+                </button>
+              </td>
+              <td class="py-2 text-center">
+                <button class="btn btn-outline-secondary btn-sm" title="Files & Images - No Data" data-bs-toggle="tooltip">
+                  <i class="bi bi-images"></i>
+                </button>
+              </td>
+              <td class="py-2 text-center">
+                <button class="btn btn-outline-secondary btn-sm" title="History / Audit Log" data-bs-toggle="tooltip">
+                  <i class="bi bi-clock-history"></i>
+                </button>
+              </td>
+            </tr>
+
+            <!-- Sample Row 4 -->
+            <tr>
+              <td class="py-2">
+                <a href="{{ url_for('samples.sample_detail', sample_code='S-2025-004') }}" class="text-decoration-none fw-semibold">
+                  Core Sample - Depth 2.4m
+                </a>
+              </td>
+              <td class="py-2"><span class="badge bg-light text-dark border">S-2025-004</span></td>
+              <td class="py-2">2025-09-20</td>
+              <td class="py-2 text-center">
+                <button class="btn btn-outline-secondary btn-sm" title="Physical Analysis - No Data" data-bs-toggle="tooltip">
+                  <i class="bi bi-beaker"></i>
+                </button>
+              </td>
+              <td class="py-2 text-center">
+                <button class="btn btn-success btn-sm" title="Microanalysis - Data Present" data-bs-toggle="tooltip">
+                  <i class="bi bi-grid-3x3-gap"></i>
+                </button>
+              </td>
+              <td class="py-2 text-center">
+                <button class="btn btn-outline-secondary btn-sm" title="Geochemical Analysis - No Data" data-bs-toggle="tooltip">
+                  <i class="bi bi-bar-chart"></i>
+                </button>
+              </td>
+              <td class="py-2 text-center">
+                <button class="btn btn-outline-secondary btn-sm" title="Files & Images - No Data" data-bs-toggle="tooltip">
+                  <i class="bi bi-images"></i>
+                </button>
+              </td>
+              <td class="py-2 text-center">
+                <button class="btn btn-outline-secondary btn-sm" title="History / Audit Log" data-bs-toggle="tooltip">
+                  <i class="bi bi-clock-history"></i>
+                </button>
+              </td>
+            </tr>
+
+            <!-- Sample Row 5 -->
+            <tr>
+              <td class="py-2">
+                <a href="{{ url_for('samples.sample_detail', sample_code='S-2025-005') }}" class="text-decoration-none fw-semibold">
+                  Cryptotephra Sample - Lake Sediment
+                </a>
+              </td>
+              <td class="py-2"><span class="badge bg-light text-dark border">S-2025-005</span></td>
+              <td class="py-2">2025-09-22</td>
+              <td class="py-2 text-center">
+                <button class="btn btn-success btn-sm" title="Physical Analysis - Data Present" data-bs-toggle="tooltip">
+                  <i class="bi bi-beaker"></i>
+                </button>
+              </td>
+              <td class="py-2 text-center">
+                <button class="btn btn-success btn-sm" title="Microanalysis - Data Present" data-bs-toggle="tooltip">
+                  <i class="bi bi-grid-3x3-gap"></i>
+                </button>
+              </td>
+              <td class="py-2 text-center">
+                <button class="btn btn-outline-secondary btn-sm" title="Geochemical Analysis - No Data" data-bs-toggle="tooltip">
+                  <i class="bi bi-bar-chart"></i>
+                </button>
+              </td>
+              <td class="py-2 text-center">
+                <button class="btn btn-success btn-sm" title="Files & Images - Data Present" data-bs-toggle="tooltip">
+                  <i class="bi bi-images"></i>
+                </button>
+              </td>
+              <td class="py-2 text-center">
+                <button class="btn btn-outline-secondary btn-sm" title="History / Audit Log" data-bs-toggle="tooltip">
+                  <i class="bi bi-clock-history"></i>
+                </button>
+              </td>
+            </tr>
+
+            <!-- Sample Row 6 - Additional sample for density -->
+            <tr>
+              <td class="py-2">
+                <a href="{{ url_for('samples.sample_detail', sample_code='S-2025-006') }}" class="text-decoration-none fw-semibold">
+                  Tephra Fallout Deposit - Station 3
+                </a>
+              </td>
+              <td class="py-2"><span class="badge bg-light text-dark border">S-2025-006</span></td>
+              <td class="py-2">2025-09-23</td>
+              <td class="py-2 text-center">
+                <button class="btn btn-success btn-sm" title="Physical Analysis - Data Present" data-bs-toggle="tooltip">
+                  <i class="bi bi-beaker"></i>
+                </button>
+              </td>
+              <td class="py-2 text-center">
+                <button class="btn btn-outline-secondary btn-sm" title="Microanalysis - No Data" data-bs-toggle="tooltip">
+                  <i class="bi bi-grid-3x3-gap"></i>
+                </button>
+              </td>
+              <td class="py-2 text-center">
+                <button class="btn btn-outline-secondary btn-sm" title="Geochemical Analysis - No Data" data-bs-toggle="tooltip">
+                  <i class="bi bi-bar-chart"></i>
+                </button>
+              </td>
+              <td class="py-2 text-center">
+                <button class="btn btn-outline-secondary btn-sm" title="Files & Images - No Data" data-bs-toggle="tooltip">
+                  <i class="bi bi-images"></i>
+                </button>
+              </td>
+              <td class="py-2 text-center">
+                <button class="btn btn-outline-secondary btn-sm" title="History / Audit Log" data-bs-toggle="tooltip">
+                  <i class="bi bi-clock-history"></i>
+                </button>
+              </td>
+            </tr>
+
+            <!-- Sample Row 7 - Additional sample for density -->
+            <tr>
+              <td class="py-2">
+                <a href="{{ url_for('samples.sample_detail', sample_code='S-2025-007') }}" class="text-decoration-none fw-semibold">
+                  Fine Ash Layer - Proximal Site
+                </a>
+              </td>
+              <td class="py-2"><span class="badge bg-light text-dark border">S-2025-007</span></td>
+              <td class="py-2">2025-09-24</td>
+              <td class="py-2 text-center">
+                <button class="btn btn-outline-secondary btn-sm" title="Physical Analysis - No Data" data-bs-toggle="tooltip">
+                  <i class="bi bi-beaker"></i>
+                </button>
+              </td>
+              <td class="py-2 text-center">
+                <button class="btn btn-outline-secondary btn-sm" title="Microanalysis - No Data" data-bs-toggle="tooltip">
+                  <i class="bi bi-grid-3x3-gap"></i>
+                </button>
+              </td>
+              <td class="py-2 text-center">
+                <button class="btn btn-success btn-sm" title="Geochemical Analysis - Data Present" data-bs-toggle="tooltip">
+                  <i class="bi bi-bar-chart"></i>
+                </button>
+              </td>
+              <td class="py-2 text-center">
+                <button class="btn btn-outline-secondary btn-sm" title="Files & Images - No Data" data-bs-toggle="tooltip">
+                  <i class="bi bi-images"></i>
+                </button>
+              </td>
+              <td class="py-2 text-center">
+                <button class="btn btn-outline-secondary btn-sm" title="History / Audit Log" data-bs-toggle="tooltip">
+                  <i class="bi bi-clock-history"></i>
+                </button>
+              </td>
+            </tr>
+
+            <!-- Sample Row 8 - Additional sample for density -->
+            <tr>
+              <td class="py-2">
+                <a href="{{ url_for('samples.sample_detail', sample_code='S-2025-008') }}" class="text-decoration-none fw-semibold">
+                  Scoria Fragments - Cinder Cone
+                </a>
+              </td>
+              <td class="py-2"><span class="badge bg-light text-dark border">S-2025-008</span></td>
+              <td class="py-2">2025-09-25</td>
+              <td class="py-2 text-center">
+                <button class="btn btn-success btn-sm" title="Physical Analysis - Data Present" data-bs-toggle="tooltip">
+                  <i class="bi bi-beaker"></i>
+                </button>
+              </td>
+              <td class="py-2 text-center">
+                <button class="btn btn-outline-secondary btn-sm" title="Microanalysis - No Data" data-bs-toggle="tooltip">
+                  <i class="bi bi-grid-3x3-gap"></i>
+                </button>
+              </td>
+              <td class="py-2 text-center">
+                <button class="btn btn-success btn-sm" title="Geochemical Analysis - Data Present" data-bs-toggle="tooltip">
+                  <i class="bi bi-bar-chart"></i>
+                </button>
+              </td>
+              <td class="py-2 text-center">
+                <button class="btn btn-outline-secondary btn-sm" title="Files & Images - No Data" data-bs-toggle="tooltip">
+                  <i class="bi bi-images"></i>
+                </button>
+              </td>
+              <td class="py-2 text-center">
+                <button class="btn btn-outline-secondary btn-sm" title="History / Audit Log" data-bs-toggle="tooltip">
+                  <i class="bi bi-clock-history"></i>
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Additional Project Information -->
+  <div class="row g-4 mb-4">
+    <div class="col-md-4">
+      <div class="card shadow-sm border-0 h-100">
         <div class="card-body">
-          <p><strong>Owner:</strong> {{ project.owner }}</p>
-          <p><strong>Status:</strong> 
+          <h5 class="card-title"><i class="bi bi-info-circle me-2"></i>Project Details</h5>
+          <p class="mb-2"><strong>Type:</strong> {{ project.type or 'Tephra Analysis' }}</p>
+          <p class="mb-2"><strong>Status:</strong>
             <span class="badge {% if project.status == 'Completed' %}bg-success
                                {% elif project.status == 'Ongoing' %}bg-warning text-dark
                                {% elif project.status == 'In Review' %}bg-info
                                {% elif project.status == 'Archived' %}bg-secondary
+                               {% else %}bg-primary
                                {% endif %}">
-              {{ project.status }}
+              {{ project.status or 'Active' }}
             </span>
           </p>
-          <p><strong>Type:</strong> {{ project.type }}</p>
-          <p><strong>Collaborators:</strong> {{ project.collaborators }}</p>
-          <p><strong>Priority:</strong> {{ project.priority }}</p>
-          <p><strong>Last updated:</strong> {{ project.last_updated }}</p>
-          <hr>
-          <p><strong>Description:</strong></p>
-          <p>{{ project.description }}</p>
-          <div class="mb-2">
+          <p class="mb-2"><strong>Collaborators:</strong> {{ project.collaborators or '4 members' }}</p>
+          <p class="mb-0"><strong>Priority:</strong> {{ project.priority or 'High' }}</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4">
+      <div class="card shadow-sm border-0 h-100">
+        <div class="card-body">
+          <h5 class="card-title"><i class="bi bi-tags me-2"></i>Tags & Categories</h5>
+          <div class="d-flex flex-wrap gap-2">
             {% for tag in project.tags %}
               <span class="badge bg-light text-dark border">{{ tag }}</span>
+            {% else %}
+              <span class="badge bg-light text-dark border">Volcanic</span>
+              <span class="badge bg-light text-dark border">Tephra</span>
+              <span class="badge bg-light text-dark border">Geochemistry</span>
+              <span class="badge bg-light text-dark border">Physical Analysis</span>
             {% endfor %}
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Samples -->
-    <div class="tab-pane fade" id="samples" role="tabpanel">
-      <h4>Associated Samples</h4>
-      <table class="table table-striped">
-        <thead>
-          <tr>
-            <th>Sample ID</th>
-            <th>Collected On</th>
-            <th>Prepared By</th>
-            <th>Status</th>
-            <th>Notes</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>S-2025-001</td>
-            <td>2025-09-15</td>
-            <td>Samantha Diaz</td>
-            <td><span class="badge bg-warning text-dark">Processing</span></td>
-            <td>Sieved at 63µm fraction</td>
-          </tr>
-          <tr>
-            <td>S-2025-002</td>
-            <td>2025-09-16</td>
-            <td>John Wright</td>
-            <td><span class="badge bg-success">Completed</span></td>
-            <td>Stored in archive</td>
-          </tr>
-          <tr>
-            <td>S-2025-003</td>
-            <td>2025-09-18</td>
-            <td>Ian Keitlan</td>
-            <td><span class="badge bg-info">In Review</span></td>
-            <td>Awaiting microscopy results</td>
-          </tr>
-        </tbody>
-      </table>
-      <a href="#" class="btn btn-sm btn-primary">+ Add Sample</a>
+    <div class="col-md-4">
+      <div class="card shadow-sm border-0 h-100">
+        <div class="card-body">
+          <h5 class="card-title"><i class="bi bi-clock-history me-2"></i>Recent Activity</h5>
+          <ul class="list-unstyled small mb-0">
+            <li class="mb-2"><strong>Today:</strong> Sample S-2025-005 archived</li>
+            <li class="mb-2"><strong>Yesterday:</strong> Physical analysis completed for S-2025-002</li>
+            <li class="mb-0"><strong>3 days ago:</strong> Project settings updated</li>
+          </ul>
+          <a href="#" class="btn btn-sm btn-outline-secondary mt-3 w-100">View Full Activity Log</a>
+        </div>
+      </div>
     </div>
-
-    <!-- Files -->
-    <div class="tab-pane fade" id="files" role="tabpanel">
-      <h4>Project Files</h4>
-      <ul class="list-group mb-3">
-        <li class="list-group-item d-flex justify-content-between align-items-center">
-          sediment_data_001.csv
-          <span class="text-muted small">Uploaded by Carlos, 2025-09-15 10:22 AM</span>
-        </li>
-        <li class="list-group-item d-flex justify-content-between align-items-center">
-          sample_images.zip
-          <span class="text-muted small">Uploaded by Samantha, 2025-09-18 03:40 PM</span>
-        </li>
-        <li class="list-group-item d-flex justify-content-between align-items-center">
-          geochem_results.xlsx
-          <span class="text-muted small">Uploaded by Matthew, 2025-09-20 09:10 AM</span>
-        </li>
-      </ul>
-      <a href="#" class="btn btn-sm btn-primary">+ Upload File</a>
-    </div>
-
-    <!-- Activity Log -->
-    <div class="tab-pane fade" id="activity" role="tabpanel">
-      <h4>Activity Log</h4>
-      <ul class="list-group">
-        <li class="list-group-item">
-          2025-09-20 08:15 AM — <strong>{{ project.owner }}</strong> created the project
-        </li>
-        <li class="list-group-item">
-          2025-09-21 11:45 AM — <strong>Samantha Diaz</strong> added sample <em>S-2025-001</em>
-        </li>
-        <li class="list-group-item">
-          2025-09-22 02:30 PM — <strong>Carlos Cortes Garcia</strong> uploaded file <em>sediment_data_001.csv</em>
-        </li>
-        <li class="list-group-item">
-          2025-09-23 09:20 AM — <strong>John Wright</strong> updated project metadata (priority changed to High)
-        </li>
-        <li class="list-group-item">
-          2025-09-25 04:05 PM — <strong>Ian Keitlan</strong> marked sample <em>S-2025-003</em> as “In Review”
-        </li>
-      </ul>
-    </div>
-
-
   </div>
 
-  <a href="{{ url_for('main.index') }}" class="btn btn-secondary mt-4">← Back to Projects</a>
+  <!-- Modals -->
+
+  <!-- Add Sample Modal -->
+  <div class="modal fade" id="addSampleModal" tabindex="-1" aria-labelledby="addSampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="addSampleModalLabel">Add New Sample</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form>
+            <div class="mb-3">
+              <label for="sampleName" class="form-label">Sample Name</label>
+              <input type="text" class="form-control" id="sampleName" placeholder="e.g., Mount St. Helens Tephra">
+            </div>
+            <div class="mb-3">
+              <label for="collectionDate" class="form-label">Collection Date</label>
+              <input type="date" class="form-control" id="collectionDate">
+            </div>
+            <div class="mb-3">
+              <label for="sampleType" class="form-label">Sample Type</label>
+              <select class="form-select" id="sampleType">
+                <option selected>Select type...</option>
+                <option value="tephra">Tephra</option>
+                <option value="pumice">Pumice</option>
+                <option value="ash">Volcanic Ash</option>
+                <option value="core">Core Sample</option>
+              </select>
+            </div>
+            <div class="mb-3">
+              <label for="sampleNotes" class="form-label">Notes</label>
+              <textarea class="form-control" id="sampleNotes" rows="3"></textarea>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="button" class="btn btn-primary">Add Sample</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bulk Upload Modal -->
+  <div class="modal fade" id="bulkUploadModal" tabindex="-1" aria-labelledby="bulkUploadModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="bulkUploadModalLabel">Import Samples via Bulk Upload</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="alert alert-info">
+            <i class="bi bi-info-circle me-2"></i>
+            Upload a CSV or Excel file with sample data. <a href="#" class="alert-link">Download template</a>
+          </div>
+          <div class="mb-3">
+            <label for="bulkUploadFile" class="form-label">Choose File</label>
+            <input class="form-control" type="file" id="bulkUploadFile" accept=".csv,.xlsx">
+          </div>
+          <div class="form-check">
+            <input class="form-check-input" type="checkbox" id="validateData" checked>
+            <label class="form-check-label" for="validateData">
+              Validate data before import
+            </label>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="button" class="btn btn-primary">Import Samples</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Export Modal -->
+  <div class="modal fade" id="exportModal" tabindex="-1" aria-labelledby="exportModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exportModalLabel">Export Project Data</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <p>Select the data you want to export:</p>
+          <div class="form-check mb-2">
+            <input class="form-check-input" type="checkbox" id="exportSamples" checked>
+            <label class="form-check-label" for="exportSamples">
+              Sample metadata
+            </label>
+          </div>
+          <div class="form-check mb-2">
+            <input class="form-check-input" type="checkbox" id="exportPhysical" checked>
+            <label class="form-check-label" for="exportPhysical">
+              Physical analysis data
+            </label>
+          </div>
+          <div class="form-check mb-2">
+            <input class="form-check-input" type="checkbox" id="exportGeochem" checked>
+            <label class="form-check-label" for="exportGeochem">
+              Geochemical analysis data
+            </label>
+          </div>
+          <div class="form-check mb-3">
+            <input class="form-check-input" type="checkbox" id="exportFiles">
+            <label class="form-check-label" for="exportFiles">
+              Include files and images (ZIP)
+            </label>
+          </div>
+          <div class="mb-3">
+            <label for="exportFormat" class="form-label">Export Format</label>
+            <select class="form-select" id="exportFormat">
+              <option value="csv">CSV</option>
+              <option value="excel">Excel (.xlsx)</option>
+              <option value="json">JSON</option>
+              <option value="earthchem">EarthChem Format</option>
+            </select>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="button" class="btn btn-primary"><i class="bi bi-download me-2"></i>Export</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Settings Modal -->
+  <div class="modal fade" id="settingsModal" tabindex="-1" aria-labelledby="settingsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="settingsModalLabel">Manage Project Settings</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <ul class="nav nav-tabs mb-3" id="settingsTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+              <button class="nav-link active" id="general-settings-tab" data-bs-toggle="tab" data-bs-target="#general-settings" type="button" role="tab">General</button>
+            </li>
+            <li class="nav-item" role="presentation">
+              <button class="nav-link" id="access-settings-tab" data-bs-toggle="tab" data-bs-target="#access-settings" type="button" role="tab">Access & Permissions</button>
+            </li>
+            <li class="nav-item" role="presentation">
+              <button class="nav-link" id="workflow-settings-tab" data-bs-toggle="tab" data-bs-target="#workflow-settings" type="button" role="tab">Workflows</button>
+            </li>
+          </ul>
+          <div class="tab-content">
+            <div class="tab-pane fade show active" id="general-settings" role="tabpanel">
+              <div class="mb-3">
+                <label for="projectTitle" class="form-label">Project Title</label>
+                <input type="text" class="form-control" id="projectTitle" value="{{ project.title }}">
+              </div>
+              <div class="mb-3">
+                <label for="projectDesc" class="form-label">Description</label>
+                <textarea class="form-control" id="projectDesc" rows="3">{{ project.description }}</textarea>
+              </div>
+              <div class="mb-3">
+                <label for="projectVisibility" class="form-label">Visibility</label>
+                <select class="form-select" id="projectVisibility">
+                  <option value="public" {% if project.visibility == 'Public' %}selected{% endif %}>Public</option>
+                  <option value="restricted" {% if project.visibility == 'Restricted' %}selected{% endif %}>Restricted</option>
+                  <option value="hidden" {% if project.visibility == 'Hidden' %}selected{% endif %}>Hidden</option>
+                </select>
+              </div>
+            </div>
+            <div class="tab-pane fade" id="access-settings" role="tabpanel">
+              <p><strong>Manage team members and permissions</strong></p>
+              <div class="list-group mb-3">
+                <div class="list-group-item d-flex justify-content-between align-items-center">
+                  <div>
+                    <strong>{{ project.owner }}</strong>
+                    <br><small class="text-muted">Project Owner</small>
+                  </div>
+                  <span class="badge bg-primary">Owner</span>
+                </div>
+                <div class="list-group-item d-flex justify-content-between align-items-center">
+                  <div>
+                    <strong>Samantha Diaz</strong>
+                    <br><small class="text-muted">Lab Technician</small>
+                  </div>
+                  <span class="badge bg-info">Collaborator</span>
+                </div>
+                <div class="list-group-item d-flex justify-content-between align-items-center">
+                  <div>
+                    <strong>John Wright</strong>
+                    <br><small class="text-muted">Research Assistant</small>
+                  </div>
+                  <span class="badge bg-info">Collaborator</span>
+                </div>
+              </div>
+              <button class="btn btn-sm btn-outline-primary">+ Add Team Member</button>
+            </div>
+            <div class="tab-pane fade" id="workflow-settings" role="tabpanel">
+              <p><strong>Configure enabled workflows for this project</strong></p>
+              <div class="form-check mb-2">
+                <input class="form-check-input" type="checkbox" id="enablePhysical" checked>
+                <label class="form-check-label" for="enablePhysical">
+                  Physical Analysis Workflow
+                </label>
+              </div>
+              <div class="form-check mb-2">
+                <input class="form-check-input" type="checkbox" id="enableMicro" checked>
+                <label class="form-check-label" for="enableMicro">
+                  Microanalysis Workflow
+                </label>
+              </div>
+              <div class="form-check mb-3">
+                <input class="form-check-input" type="checkbox" id="enableGeochem" checked>
+                <label class="form-check-label" for="enableGeochem">
+                  Geochemical Analysis Workflow
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="button" class="btn btn-primary">Save Changes</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <a href="{{ url_for('main.index') }}" class="btn btn-secondary mt-4"><i class="bi bi-arrow-left me-2"></i>Back to Projects</a>
+
+  <!-- Initialize Bootstrap Tooltips -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+      var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl);
+      });
+    });
+  </script>
 {% endblock %}
