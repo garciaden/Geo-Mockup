@@ -112,10 +112,6 @@ projects = [
     }
 ]
 
-@bp.route('/')
-def project_list():
-    return render_template("projects/project_list.html", title="Projects", projects=projects)
-
 @bp.route('/<int:project_id>')
 def project_detail(project_id):
     project = next((p for p in projects if p["id"] == project_id), None)
