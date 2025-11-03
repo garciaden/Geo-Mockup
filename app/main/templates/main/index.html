@@ -2,13 +2,14 @@
 
 {% block content %}
   <!-- Welcome Header -->
-  <div class="p-4 mb-4 bg-light rounded-3 shadow-sm">
-    <div class="container-fluid text-center">
-      <h1 class="display-5 fw-bold">Concord Lab Manager</h1>
-      <p class="fs-5 text-muted">
-        Browse public projects and discover research from the Concord University Laboratory
-      </p>
+  <div class="mb-4 d-flex justify-content-between align-items-center">
+    <div>
+      <h1 class="h3 mb-1">[LAB NAME] Lab Manager</h1>
+      <p class="text-muted mb-0 small">Browse public projects and discover research</p>
     </div>
+    <a href="{{ url_for('projects.project_create') }}" class="btn btn-primary">
+      <i class="bi bi-plus-circle me-1"></i>Add Project
+    </a>
   </div>
 
   <!-- Projects Per Page Selector and Results Info -->
@@ -52,18 +53,18 @@
     <div class="card-body py-2">
       <div class="row align-items-center">
         <div class="col-auto">
-          <strong class="text-muted">Sort by:</strong>
+          <strong class="text-muted small">Sort by:</strong>
         </div>
         <div class="col-auto">
           {% set next_title_order = 'desc' if sort_info.sort_by == 'title' and sort_info.sort_order == 'asc' else 'asc' %}
           <a href="{{ url_for('main.index', sort_by='title', sort_order=next_title_order, per_page=pagination.per_page, search=search_query, page=1) }}"
              class="btn btn-sm {% if sort_info.sort_by == 'title' %}btn-primary{% else %}btn-outline-secondary{% endif %}">
-            <i class="bi bi-folder me-1"></i>Project Name
+            Project
             {% if sort_info.sort_by == 'title' %}
               {% if sort_info.sort_order == 'asc' %}
-                <i class="bi bi-arrow-up"></i>
+                <i class="bi bi-arrow-up ms-1"></i>
               {% else %}
-                <i class="bi bi-arrow-down"></i>
+                <i class="bi bi-arrow-down ms-1"></i>
               {% endif %}
             {% endif %}
           </a>
@@ -72,12 +73,12 @@
           {% set next_owner_order = 'desc' if sort_info.sort_by == 'owner' and sort_info.sort_order == 'asc' else 'asc' %}
           <a href="{{ url_for('main.index', sort_by='owner', sort_order=next_owner_order, per_page=pagination.per_page, search=search_query, page=1) }}"
              class="btn btn-sm {% if sort_info.sort_by == 'owner' %}btn-primary{% else %}btn-outline-secondary{% endif %}">
-            <i class="bi bi-person-circle me-1"></i>Project Owner
+            Owner
             {% if sort_info.sort_by == 'owner' %}
               {% if sort_info.sort_order == 'asc' %}
-                <i class="bi bi-arrow-up"></i>
+                <i class="bi bi-arrow-up ms-1"></i>
               {% else %}
-                <i class="bi bi-arrow-down"></i>
+                <i class="bi bi-arrow-down ms-1"></i>
               {% endif %}
             {% endif %}
           </a>
@@ -85,7 +86,7 @@
         <div class="col-auto ms-auto">
           <small class="text-muted">
             {% if sort_info.sort_by == 'title' %}
-              Sorted by Project Name ({{ 'A-Z' if sort_info.sort_order == 'asc' else 'Z-A' }})
+              Sorted by Project ({{ 'A-Z' if sort_info.sort_order == 'asc' else 'Z-A' }})
             {% elif sort_info.sort_by == 'owner' %}
               Sorted by Owner ({{ 'A-Z' if sort_info.sort_order == 'asc' else 'Z-A' }})
             {% endif %}
@@ -95,40 +96,47 @@
     </div>
   </div>
 
-  <!-- Project List - Compact Format -->
+  <!-- Project List - Scientific Compact Format -->
   {% if projects %}
-    <div class="list-group mb-4">
-      {% for project in projects %}
-        <div class="list-group-item list-group-item-action py-2">
-          <div class="row align-items-center">
-            <!-- Project Name (40%) -->
-            <div class="col-md-4">
-              <strong class="d-block text-truncate" title="{{ project.title }}">
-                <i class="bi bi-folder text-primary me-1"></i>{{ project.title }}
-              </strong>
-            </div>
-            <!-- Project Owner (20%) -->
-            <div class="col-md-2">
-              <small class="text-muted">
-                <i class="bi bi-person-circle me-1"></i>{{ project.owner }}
-              </small>
-            </div>
-            <!-- Description (30%) -->
-            <div class="col-md-4">
-              <small class="text-muted text-truncate d-block" title="{{ project.description }}">
-                {{ project.description[:80] }}{% if project.description|length > 80 %}...{% endif %}
-              </small>
-            </div>
-            <!-- View Button (10%) -->
-            <div class="col-md-2 text-end">
-              <a href="{{ url_for('projects.project_detail', project_id=project.id) }}"
-                 class="btn btn-sm btn-primary">
-                <i class="bi bi-eye me-1"></i>View
-              </a>
-            </div>
-          </div>
-        </div>
-      {% endfor %}
+    <div class="table-responsive">
+      <table class="table table-sm table-hover align-middle mb-4" style="font-size: 0.9rem;">
+        <thead class="table-light">
+          <tr>
+            <th scope="col" style="width: 35%;">Project</th>
+            <th scope="col" style="width: 18%;">Owner</th>
+            <th scope="col" style="width: 35%;">Description</th>
+            <th scope="col" style="width: 12%;" class="text-end">Updated</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for project in projects %}
+            <tr>
+              <td>
+                {% if project.is_private %}
+                  🔒
+                {% endif %}
+                <a href="{{ url_for('projects.project_detail_by_slug', slug=project.slug) }}" class="text-decoration-none text-dark fw-semibold">
+                  {{ project.title }}
+                </a>
+                <span class="badge ms-2
+                  {% if project.status == 'Completed' %}bg-success
+                  {% elif project.status == 'Ongoing' %}bg-primary
+                  {% elif project.status == 'In Review' %}bg-warning text-dark
+                  {% elif project.status == 'Archived' %}bg-secondary
+                  {% else %}bg-info
+                  {% endif %}" style="font-size: 0.75rem;">
+                  {{ project.status }}
+                </span>
+              </td>
+              <td class="text-muted">{{ project.owner }}</td>
+              <td class="text-muted small">
+                {{ project.description[:100] }}{% if project.description|length > 100 %}...{% endif %}
+              </td>
+              <td class="text-muted text-end small">{{ project.last_updated }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
     </div>
 
     <!-- Pagination Controls -->
@@ -173,23 +181,6 @@
           </li>
         </ul>
       </nav>
-
-      <!-- Prominent Next Page Button -->
-      <div class="text-center mt-4 mb-5">
-        {% if pagination.has_next %}
-          <a href="{{ url_for('main.index', page=pagination.next_page, per_page=pagination.per_page, search=search_query, sort_by=sort_info.sort_by, sort_order=sort_info.sort_order) }}"
-             class="btn btn-primary btn-lg">
-            <i class="bi bi-arrow-right-circle me-2"></i>Load Next Page
-          </a>
-          <p class="text-muted mt-2 mb-0">
-            <small>Page {{ pagination.page }} of {{ pagination.total_pages }}</small>
-          </p>
-        {% else %}
-          <div class="alert alert-success d-inline-block" role="alert">
-            <i class="bi bi-check-circle me-2"></i>You've reached the end of the list!
-          </div>
-        {% endif %}
-      </div>
     {% endif %}
 
   {% else %}
