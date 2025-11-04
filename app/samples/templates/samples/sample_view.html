@@ -340,7 +340,7 @@
                     {{ label }}
                   </button>
                 </h2>
-                <div id="collapse-{{ key }}" class="accordion-collapse collapse {% if loop.first %}show{% endif %}" aria-labelledby="heading-{{ key }}" data-bs-parent="#physicalAnalysisAccordion">
+                <div id="collapse-{{ key }}" class="accordion-collapse collapse {% if loop.first %}show{% endif %}" aria-labelledby="heading-{{ key }}">
                   <div class="accordion-body">
                     <div class="d-flex justify-content-end gap-2 mb-3">
                       {% if can_manage_analysis %}
@@ -404,7 +404,7 @@
                     {{ label }}
                   </button>
                 </h2>
-                <div id="collapse-micro-{{ key }}" class="accordion-collapse collapse {% if loop.first %}show{% endif %}" aria-labelledby="heading-micro-{{ key }}" data-bs-parent="#microanalysisAccordion">
+                <div id="collapse-micro-{{ key }}" class="accordion-collapse collapse {% if loop.first %}show{% endif %}" aria-labelledby="heading-micro-{{ key }}">
                   <div class="accordion-body">
                     <div class="d-flex justify-content-end gap-2 mb-3">
                       <button class="btn btn-sm btn-outline-success" type="button"><i class="bi bi-cloud-upload"></i> Upload Image</button>
