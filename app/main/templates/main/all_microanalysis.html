@@ -1,0 +1,139 @@
+{% extends "base.html" %}
+{% block content %}
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h1 class="mb-1">All Microanalysis</h1>
+      <p class="text-muted mb-0">System-wide view of all microanalysis data across all projects</p>
+    </div>
+    <div class="d-flex gap-2">
+      <a href="{{ url_for('main.all_samples') }}" class="btn btn-outline-secondary">
+        <i class="bi bi-arrow-left me-1"></i>All Samples
+      </a>
+      <a href="{{ url_for('main.index') }}" class="btn btn-outline-secondary">
+        <i class="bi bi-house me-1"></i>Home
+      </a>
+    </div>
+  </div>
+
+  <!-- Summary Cards -->
+  <div class="row g-3 mb-4">
+    <div class="col-md-4">
+      <div class="card shadow-sm border-0">
+        <div class="card-body">
+          <h6 class="text-muted mb-1">Total Analyses</h6>
+          <h3 class="mb-0">{{ analyses|length }}</h3>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card shadow-sm border-0">
+        <div class="card-body">
+          <h6 class="text-muted mb-1">Total Points Analyzed</h6>
+          <h3 class="mb-0 text-primary">{{ analyses|sum(attribute='points_analyzed') }}</h3>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card shadow-sm border-0">
+        <div class="card-body">
+          <h6 class="text-muted mb-1">QC Passed</h6>
+          <h3 class="mb-0 text-success">{{ analyses|selectattr('qc_status', 'equalto', 'Passed')|list|length }}</h3>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filter Section -->
+  <div class="card shadow-sm border-0 mb-4">
+    <div class="card-body">
+      <div class="row g-3">
+        <div class="col-md-3">
+          <label class="form-label">Analysis Type</label>
+          <select class="form-select">
+            <option selected>All Types</option>
+            <option>EPMA/SEM</option>
+            <option>Micro-XRF</option>
+            <option>SIMS</option>
+          </select>
+        </div>
+        <div class="col-md-3">
+          <label class="form-label">Status</label>
+          <select class="form-select">
+            <option selected>All Statuses</option>
+            <option>Complete</option>
+            <option>In Progress</option>
+            <option>Pending</option>
+          </select>
+        </div>
+        <div class="col-md-3">
+          <label class="form-label">Analyst</label>
+          <select class="form-select">
+            <option selected>All Analysts</option>
+            <option>Dr. Thomas Rodriguez</option>
+            <option>Dr. Jessica Lane</option>
+            <option>Lab Field Team</option>
+          </select>
+        </div>
+        <div class="col-md-3">
+          <label class="form-label">&nbsp;</label>
+          <button class="btn btn-primary w-100">Apply Filters</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Analysis Table -->
+  <div class="card shadow-sm border-0">
+    <div class="card-body p-0">
+      <div class="table-responsive">
+        <table class="table table-hover mb-0">
+          <thead class="table-light">
+            <tr>
+              <th>Sample ID</th>
+              <th>Lab Catalog #</th>
+              <th>Project</th>
+              <th>Analysis Type</th>
+              <th>Run Date</th>
+              <th>Analyst</th>
+              <th>Minerals/Phases</th>
+              <th class="text-center">Points</th>
+              <th>Status</th>
+              <th>QC Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for analysis in analyses %}
+              <tr>
+                <td>
+                  <a href="{{ url_for('samples.sample_detail', sample_code=analysis.sample_id) }}" class="text-decoration-none fw-semibold">
+                    {{ analysis.sample_id }}
+                  </a>
+                </td>
+                <td><span class="text-muted">{{ analysis.lab_catalog }}</span></td>
+                <td>{{ analysis.project_title }}</td>
+                <td><span class="badge bg-light text-dark border">{{ analysis.analysis_type }}</span></td>
+                <td>{{ analysis.run_date }}</td>
+                <td>{{ analysis.analyst }}</td>
+                <td><small>{{ analysis.minerals_analyzed }}</small></td>
+                <td class="text-center"><span class="badge bg-info">{{ analysis.points_analyzed }}</span></td>
+                <td>
+                  <span class="badge bg-success">{{ analysis.status }}</span>
+                </td>
+                <td>
+                  <span class="badge bg-success">{{ analysis.qc_status }}</span>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Export Section -->
+  <div class="mt-4 text-end">
+    <button class="btn btn-outline-primary">
+      <i class="bi bi-download me-1"></i>Export All Data
+    </button>
+  </div>
+{% endblock %}

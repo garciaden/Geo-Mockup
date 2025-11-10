@@ -462,7 +462,7 @@ def _build_linked_people(sample):
                 "id": f"{sample.get('sample_code', 'sample')}-collector-{idx}",
                 "full_name": name,
                 "role": "Field Collector",
-                "institution": "CULS Field Team",
+                "institution": "Lab Field Team",
                 "email": _default_email(name),
                 "profile_url": "#",
             }
@@ -1019,7 +1019,7 @@ def format_sample(sample):
     formatted["attachment_summary"] = _summarize_attachments(attachments_list)
 
     formatted["audit_log"] = _build_audit_log(formatted)
-    formatted["placeholder_image_url"] = formatted.get("placeholder_image_url") or "https://placehold.co/200x150?text=CULS"
+    formatted["placeholder_image_url"] = formatted.get("placeholder_image_url") or "https://placehold.co/200x150?text=Sample"
     formatted["edit_url"] = formatted.get("edit_url") or "#"
     formatted["add_analysis_url"] = formatted.get("add_analysis_url") or "#"
 
@@ -1057,11 +1057,11 @@ def sample_register():
 @bp.route("/bulk-upload")
 def sample_bulk_upload():
     workbook_templates = [
-        {"name": "Collection Workbook", "filename": "CULS_collection_template.xlsx"},
-        {"name": "Processing & Preparation", "filename": "CULS_processing_template.xlsx"},
-        {"name": "Physical Analysis", "filename": "CULS_physical_analysis_template.xlsx"},
-        {"name": "Geochemical Analysis", "filename": "CULS_geochem_template.xlsx"},
-        {"name": "Correlation Workbook", "filename": "CULS_correlation_template.xlsx"},
+        {"name": "Collection Workbook", "filename": "collection_template.xlsx"},
+        {"name": "Processing & Preparation", "filename": "processing_template.xlsx"},
+        {"name": "Physical Analysis", "filename": "physical_analysis_template.xlsx"},
+        {"name": "Geochemical Analysis", "filename": "geochem_template.xlsx"},
+        {"name": "Correlation Workbook", "filename": "correlation_template.xlsx"},
     ]
     return render_template(
         "samples/sample_bulk_upload.html",
@@ -1077,10 +1077,19 @@ def sample_detail(sample_code):
         abort(404)
     formatted = format_sample(sample)
     metadata_flags = formatted.get("metadata_flags", [])
-    can_edit_sample = formatted["status"].lower() != "archived" and "legacy" not in metadata_flags
-    can_manage_analysis = formatted["status"].lower() != "archived"
-    can_create_subsample = formatted["status"].lower() == "active"
-    can_flag_samples = True
+    # Check user permissions from session
+    from flask import session
+    user = session.get('user', {})
+    user_can_edit = user.get('can_edit_sample', False)
+    user_can_manage_analysis = user.get('can_manage_analysis', False)
+    user_can_create_subsample = user.get('can_create_subsample', False)
+    user_can_flag = user.get('can_flag_samples', False)
+
+    # Combine user permissions with sample status restrictions
+    can_edit_sample = user_can_edit and (formatted["status"].lower() != "archived" and "legacy" not in metadata_flags)
+    can_manage_analysis = user_can_manage_analysis and (formatted["status"].lower() != "archived")
+    can_create_subsample = user_can_create_subsample and (formatted["status"].lower() == "active")
+    can_flag_samples = user_can_flag
     return render_template(
         "samples/sample_view.html",
         title=f"{formatted['sample_code']} · Sample View",

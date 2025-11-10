@@ -1,24 +1,119 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <h1>Sign In</h1>
-    <form action="" method="post" novalidate>
-        {{ form.hidden_tag() }}
-        <p>
-            {{ form.username.label }}<br>
-            {{ form.username(size=32) }}<br>
-            {% for error in form.username.errors %}
-            <span style="color: red;">[{{ error }}]</span>
-            {% endfor %}
+<div class="row justify-content-center">
+  <div class="col-md-6 col-lg-5">
+    <div class="card shadow-sm border-0">
+      <div class="card-body p-4">
+        <h2 class="text-center mb-4">Mock Login (Development)</h2>
+        <p class="text-muted text-center mb-4">
+          <small>Select a role to test different permission levels</small>
         </p>
-        <p>
-            {{ form.password.label }}<br>
-            {{ form.password(size=32) }}<br>
-            {% for error in form.password.errors %}
-            <span style="color: red;">[{{ error }}]</span>
-            {% endfor %}
-        </p>
-        <p>{{ form.remember_me() }} {{ form.remember_me.label }}</p>
-        <p>{{ form.submit() }}</p>
-    </form>
+
+        <form method="POST" action="{{ url_for('auth.login') }}">
+          <div class="mb-3">
+            <label for="username" class="form-label">Username (Optional)</label>
+            <input type="text" class="form-control" id="username" name="username" placeholder="Test User">
+            <small class="form-text text-muted">Leave blank for default name</small>
+          </div>
+
+          <div class="mb-4">
+            <label for="role" class="form-label">Select Role</label>
+            <select class="form-select" id="role" name="role" required>
+              <option value="">-- Choose a role --</option>
+              <option value="Administrator">Administrator (Full Access)</option>
+              <option value="Project_Owner">Project Owner (Manage Projects)</option>
+              <option value="Collaborator">Collaborator (Edit Samples & Data)</option>
+              <option value="View_Export">View & Export (Read + Export)</option>
+              <option value="View_Only">View Only (Read Only)</option>
+            </select>
+          </div>
+
+          <button type="submit" class="btn btn-primary w-100 mb-3">Login</button>
+        </form>
+
+        <hr class="my-4">
+
+        <h6 class="text-muted mb-3">Quick Login Links (Development)</h6>
+        <div class="d-grid gap-2">
+          <a href="{{ url_for('auth.quick_login', role='Administrator') }}" class="btn btn-sm btn-outline-danger">
+            <i class="bi bi-shield-fill-check"></i> Administrator
+          </a>
+          <a href="{{ url_for('auth.quick_login', role='Project_Owner') }}" class="btn btn-sm btn-outline-primary">
+            <i class="bi bi-person-fill-gear"></i> Project Owner
+          </a>
+          <a href="{{ url_for('auth.quick_login', role='Collaborator') }}" class="btn btn-sm btn-outline-success">
+            <i class="bi bi-people-fill"></i> Collaborator
+          </a>
+          <a href="{{ url_for('auth.quick_login', role='View_Export') }}" class="btn btn-sm btn-outline-info">
+            <i class="bi bi-file-earmark-arrow-down"></i> View & Export
+          </a>
+          <a href="{{ url_for('auth.quick_login', role='View_Only') }}" class="btn btn-sm btn-outline-secondary">
+            <i class="bi bi-eye-fill"></i> View Only
+          </a>
+        </div>
+
+        <div class="alert alert-warning mt-4 mb-0">
+          <i class="bi bi-exclamation-triangle-fill me-2"></i>
+          <strong>Development Only:</strong> This mock login bypasses authentication. Remove before production.
+        </div>
+      </div>
+    </div>
+
+    <!-- Role Permissions Reference -->
+    <div class="card shadow-sm border-0 mt-4">
+      <div class="card-body">
+        <h6 class="mb-3">Role Permissions Reference</h6>
+        <div class="table-responsive">
+          <table class="table table-sm">
+            <thead class="table-light">
+              <tr>
+                <th>Permission</th>
+                <th class="text-center">Admin</th>
+                <th class="text-center">Owner</th>
+                <th class="text-center">Collab</th>
+                <th class="text-center">Export</th>
+                <th class="text-center">View</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Create Projects</td>
+                <td class="text-center"><i class="bi bi-check-circle-fill text-success"></i></td>
+                <td class="text-center"><i class="bi bi-check-circle-fill text-success"></i></td>
+                <td class="text-center"><i class="bi bi-x-circle-fill text-danger"></i></td>
+                <td class="text-center"><i class="bi bi-x-circle-fill text-danger"></i></td>
+                <td class="text-center"><i class="bi bi-x-circle-fill text-danger"></i></td>
+              </tr>
+              <tr>
+                <td>Edit Samples</td>
+                <td class="text-center"><i class="bi bi-check-circle-fill text-success"></i></td>
+                <td class="text-center"><i class="bi bi-check-circle-fill text-success"></i></td>
+                <td class="text-center"><i class="bi bi-check-circle-fill text-success"></i></td>
+                <td class="text-center"><i class="bi bi-x-circle-fill text-danger"></i></td>
+                <td class="text-center"><i class="bi bi-x-circle-fill text-danger"></i></td>
+              </tr>
+              <tr>
+                <td>Manage Analysis</td>
+                <td class="text-center"><i class="bi bi-check-circle-fill text-success"></i></td>
+                <td class="text-center"><i class="bi bi-check-circle-fill text-success"></i></td>
+                <td class="text-center"><i class="bi bi-check-circle-fill text-success"></i></td>
+                <td class="text-center"><i class="bi bi-x-circle-fill text-danger"></i></td>
+                <td class="text-center"><i class="bi bi-x-circle-fill text-danger"></i></td>
+              </tr>
+              <tr>
+                <td>Export Data</td>
+                <td class="text-center"><i class="bi bi-check-circle-fill text-success"></i></td>
+                <td class="text-center"><i class="bi bi-check-circle-fill text-success"></i></td>
+                <td class="text-center"><i class="bi bi-x-circle-fill text-danger"></i></td>
+                <td class="text-center"><i class="bi bi-check-circle-fill text-success"></i></td>
+                <td class="text-center"><i class="bi bi-x-circle-fill text-danger"></i></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 {% endblock %}
