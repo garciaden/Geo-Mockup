@@ -1,4 +1,6 @@
-# 11/10/25 - Changes made by Matthew Kenner
+# Changelog
+
+## 11/10/25 - Changes made by Matthew Kenner
 
 ### Homepage Updates
 
@@ -81,6 +83,7 @@ Created system-wide admin views for Administrators only:
 - **Admin Navigation Menu**: Dropdown in header for quick access (Administrators only)
 
 Features:
+
 - Summary statistics cards for each view
 - Filter controls by analysis type, status, analyst
 - Export functionality buttons
@@ -98,6 +101,7 @@ Features:
 Implemented comprehensive access control for private projects:
 
 **Access Logic**:
+
 - Public projects (`is_private: false`) are accessible to everyone
 - Private projects (`is_private: true`) require permission:
   - Administrators have access to all projects
@@ -106,6 +110,7 @@ Implemented comprehensive access control for private projects:
   - All other users see access request screen
 
 **User Experience**:
+
 - Users with access see project normally
 - Users without access see:
   - Blurred background showing project preview
@@ -117,6 +122,7 @@ Implemented comprehensive access control for private projects:
   - Login prompt for non-authenticated users
 
 **Features**:
+
 - Automatic permission checking on project load
 - Visual feedback with blur effect (8px filter)
 - Non-interactive blurred content (pointer-events disabled)
