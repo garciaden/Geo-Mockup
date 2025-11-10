@@ -1,5 +1,34 @@
-from flask import render_template
+from flask import render_template, session
 from app.projects import bp
+
+
+def user_has_project_access(project):
+    """Check if current user has access to this project"""
+    # Public projects are accessible to everyone
+    if not project.get('is_private'):
+        return True
+
+    # Check if user is logged in
+    if not session.get('is_authenticated'):
+        return False
+
+    user = session.get('user', {})
+    username = user.get('username', '')
+
+    # Administrators have access to everything
+    if user.get('role') == 'Administrator':
+        return True
+
+    # Check if user is the project owner
+    if project.get('owner') == username:
+        return True
+
+    # Check if user is a collaborator
+    collaborators = project.get('collaborators', '')
+    if collaborators and username in collaborators:
+        return True
+
+    return False
 
 projects = [
     {
@@ -364,14 +393,24 @@ def project_detail(project_id):
     project = next((p for p in projects if p["id"] == project_id), None)
     if not project:
         return "Project not found", 404
-    return render_template("projects/project_detail.html", title=project["title"], project=project)
+
+    has_access = user_has_project_access(project)
+    return render_template("projects/project_detail.html",
+                         title=project["title"],
+                         project=project,
+                         has_access=has_access)
 
 @bp.route('/<slug>')
 def project_detail_by_slug(slug):
     project = next((p for p in projects if p["slug"] == slug), None)
     if not project:
         return "Project not found", 404
-    return render_template("projects/project_detail.html", title=project["title"], project=project)
+
+    has_access = user_has_project_access(project)
+    return render_template("projects/project_detail.html",
+                         title=project["title"],
+                         project=project,
+                         has_access=has_access)
 
 
 @bp.route('/new')

@@ -7,9 +7,11 @@
       <h1 class="h3 mb-1">Geology Lab Manager</h1>
       <p class="text-muted mb-0 small">Browse public projects and discover research</p>
     </div>
-    <a href="{{ url_for('projects.project_create') }}" class="btn btn-primary">
-      <i class="bi bi-plus-circle me-1"></i>Add Project
-    </a>
+    {% if session.get('is_authenticated') and session.get('user', {}).get('can_create_projects') %}
+      <a href="{{ url_for('projects.project_create') }}" class="btn btn-primary">
+        <i class="bi bi-plus-circle me-1"></i>Add Project
+      </a>
+    {% endif %}
   </div>
 
   <!-- Projects Per Page Selector and Results Info -->
@@ -83,12 +85,28 @@
             {% endif %}
           </a>
         </div>
+        <div class="col-auto">
+          {% set next_updated_order = 'desc' if sort_info.sort_by == 'last_updated' and sort_info.sort_order == 'asc' else 'asc' %}
+          <a href="{{ url_for('main.index', sort_by='last_updated', sort_order=next_updated_order, per_page=pagination.per_page, search=search_query, page=1) }}"
+             class="btn btn-sm {% if sort_info.sort_by == 'last_updated' %}btn-primary{% else %}btn-outline-secondary{% endif %}">
+            Last Updated
+            {% if sort_info.sort_by == 'last_updated' %}
+              {% if sort_info.sort_order == 'asc' %}
+                <i class="bi bi-arrow-up ms-1"></i>
+              {% else %}
+                <i class="bi bi-arrow-down ms-1"></i>
+              {% endif %}
+            {% endif %}
+          </a>
+        </div>
         <div class="col-auto ms-auto">
           <small class="text-muted">
             {% if sort_info.sort_by == 'title' %}
               Sorted by Project ({{ 'A-Z' if sort_info.sort_order == 'asc' else 'Z-A' }})
             {% elif sort_info.sort_by == 'owner' %}
               Sorted by Owner ({{ 'A-Z' if sort_info.sort_order == 'asc' else 'Z-A' }})
+            {% elif sort_info.sort_by == 'last_updated' %}
+              Sorted by Last Updated ({{ 'Oldest' if sort_info.sort_order == 'asc' else 'Newest' }})
             {% endif %}
           </small>
         </div>
@@ -132,7 +150,7 @@
               <td class="text-muted small">
                 {{ project.description[:100] }}{% if project.description|length > 100 %}...{% endif %}
               </td>
-              <td class="text-muted text-end small">{{ project.last_updated }}</td>
+              <td class="text-muted text-end small">{{ project.last_updated_relative }}</td>
             </tr>
           {% endfor %}
         </tbody>

@@ -1,5 +1,49 @@
 {% extends "base.html" %}
 {% block content %}
+  {% if not has_access %}
+    <!-- CSS for blurred background when access is denied -->
+    <style>
+      .access-denied-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.7);
+        z-index: 1050;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .blurred-content {
+        filter: blur(8px);
+        pointer-events: none;
+        user-select: none;
+      }
+      .access-request-card {
+        background: white;
+        border-radius: 8px;
+        padding: 2rem;
+        max-width: 500px;
+        width: 90%;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+      }
+    </style>
+  {% endif %}
+
+  <div class="{% if not has_access %}blurred-content{% endif %}">
+  <!-- Breadcrumb Navigation -->
+  <nav aria-label="breadcrumb" class="mb-3">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item">
+        <a href="{{ url_for('main.index') }}">
+          <i class="bi bi-house"></i> Home
+        </a>
+      </li>
+      <li class="breadcrumb-item active" aria-current="page">{{ project.title }}</li>
+    </ol>
+  </nav>
+
   <!-- Project Header Section -->
   <div class="card shadow-sm border-0 mb-4">
     <div class="card-body">
@@ -31,9 +75,11 @@
         </div>
         <div class="col-md-4">
           <div class="d-flex gap-2 justify-content-end">
-            <button class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#settingsModal" title="Manage Project Settings">
-              <i class="bi bi-gear"></i>
-            </button>
+            {% if session.get('is_authenticated') and session.get('user', {}).get('can_create_projects') %}
+              <button class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#settingsModal" title="Manage Project Settings">
+                <i class="bi bi-gear"></i> Settings
+              </button>
+            {% endif %}
           </div>
         </div>
       </div>
@@ -67,8 +113,9 @@
         <table class="table table-sm table-hover mb-0" style="font-size: 0.9rem;">
           <thead class="table-light">
             <tr>
-              <th class="py-2">Sample Name</th>
+              <th class="py-2">Short Description</th>
               <th class="py-2">Sample ID</th>
+              <th class="py-2">Lab Catalog Number</th>
               <th class="py-2">Collection Date</th>
               <th class="py-2 text-center">Physical Analysis</th>
               <th class="py-2 text-center">Microanalysis</th>
@@ -86,6 +133,7 @@
                 </a>
               </td>
               <td class="py-2"><span class="badge bg-light text-dark border">JL20-01A-1</span></td>
+              <td class="py-2"><span class="text-muted">LAB-2025-001</span></td>
               <td class="py-2">2025-09-15</td>
               <td class="py-2 text-center">
                 <button class="btn btn-outline-secondary btn-sm" title="Physical Analysis - No Data" data-bs-toggle="tooltip">
@@ -122,6 +170,7 @@
                 </a>
               </td>
               <td class="py-2"><span class="badge bg-light text-dark border">JL20-01A-2</span></td>
+              <td class="py-2"><span class="text-muted">LAB-2025-002</span></td>
               <td class="py-2">2025-08-02</td>
               <td class="py-2 text-center">
                 <button class="btn btn-success btn-sm" title="Physical Analysis - Data Present" data-bs-toggle="tooltip">
@@ -158,6 +207,7 @@
                 </a>
               </td>
               <td class="py-2"><span class="badge bg-light text-dark border">JL20-01A-3</span></td>
+              <td class="py-2"><span class="text-muted">LAB-1998-003</span></td>
               <td class="py-2">1998-06-12</td>
               <td class="py-2 text-center">
                 <button class="btn btn-success btn-sm" title="Physical Analysis - Data Present" data-bs-toggle="tooltip">
@@ -194,6 +244,7 @@
                 </a>
               </td>
               <td class="py-2"><span class="badge bg-light text-dark border">JL20-01A-4</span></td>
+              <td class="py-2"><span class="text-muted">LAB-2025-004</span></td>
               <td class="py-2">2025-09-20</td>
               <td class="py-2 text-center">
                 <button class="btn btn-outline-secondary btn-sm" title="Physical Analysis - No Data" data-bs-toggle="tooltip">
@@ -230,6 +281,7 @@
                 </a>
               </td>
               <td class="py-2"><span class="badge bg-light text-dark border">JL20-01A-5</span></td>
+              <td class="py-2"><span class="text-muted">LAB-2025-005</span></td>
               <td class="py-2">2025-09-23</td>
               <td class="py-2 text-center">
                 <button class="btn btn-outline-secondary btn-sm" title="Physical Analysis - No Data" data-bs-toggle="tooltip">
@@ -266,6 +318,7 @@
                 </a>
               </td>
               <td class="py-2"><span class="badge bg-light text-dark border">JL20-01A-6</span></td>
+              <td class="py-2"><span class="text-muted">LAB-2025-006</span></td>
               <td class="py-2">2025-09-25</td>
               <td class="py-2 text-center">
                 <button class="btn btn-success btn-sm" title="Physical Analysis - Data Present" data-bs-toggle="tooltip">
@@ -302,6 +355,7 @@
                 </a>
               </td>
               <td class="py-2"><span class="badge bg-light text-dark border">JL20-01A-7</span></td>
+              <td class="py-2"><span class="text-muted">LAB-2025-007</span></td>
               <td class="py-2">2025-09-24</td>
               <td class="py-2 text-center">
                 <button class="btn btn-outline-secondary btn-sm" title="Physical Analysis - No Data" data-bs-toggle="tooltip">
@@ -338,6 +392,7 @@
                 </a>
               </td>
               <td class="py-2"><span class="badge bg-light text-dark border">JL20-01A-8</span></td>
+              <td class="py-2"><span class="text-muted">LAB-2025-008</span></td>
               <td class="py-2">2025-09-22</td>
               <td class="py-2 text-center">
                 <button class="btn btn-success btn-sm" title="Physical Analysis - Data Present" data-bs-toggle="tooltip">
@@ -653,6 +708,51 @@
   </div>
 
   <a href="{{ url_for('main.index') }}" class="btn btn-secondary mt-4"><i class="bi bi-arrow-left me-2"></i>Back to Projects</a>
+
+  </div> <!-- Close blurred-content div -->
+
+  {% if not has_access %}
+    <!-- Access Request Overlay -->
+    <div class="access-denied-overlay">
+      <div class="access-request-card">
+        <div class="text-center mb-4">
+          <i class="bi bi-lock-fill text-warning" style="font-size: 3rem;"></i>
+        </div>
+        <h3 class="text-center mb-3">Private Project</h3>
+        <p class="text-center text-muted mb-4">
+          This project is private. You need permission from the project owner to view its contents.
+        </p>
+
+        <div class="mb-3">
+          <strong>Project:</strong> {{ project.title }}<br>
+          <strong>Owner:</strong> {{ project.owner }}
+        </div>
+
+        <form method="POST" action="#">
+          <div class="mb-3">
+            <label class="form-label">Request Message (Optional)</label>
+            <textarea class="form-control" rows="3" placeholder="Please explain why you need access to this project..."></textarea>
+          </div>
+
+          <div class="d-grid gap-2">
+            <button type="submit" class="btn btn-primary">
+              <i class="bi bi-envelope me-2"></i>Request Access
+            </button>
+            <a href="{{ url_for('main.index') }}" class="btn btn-outline-secondary">
+              <i class="bi bi-arrow-left me-2"></i>Back to Projects
+            </a>
+          </div>
+        </form>
+
+        {% if not session.get('is_authenticated') %}
+          <div class="alert alert-info mt-3 mb-0">
+            <i class="bi bi-info-circle me-2"></i>
+            <a href="{{ url_for('auth.login') }}">Log in</a> to request access to this project.
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  {% endif %}
 
   <!-- Initialize Bootstrap Tooltips -->
   <script>

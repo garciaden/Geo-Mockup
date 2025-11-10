@@ -312,6 +312,120 @@
               </div>
             </div>
           </div>
+
+          <!-- Inventory / Sub-samples Section -->
+          <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white border-0 d-flex justify-content-between align-items-center">
+              <h5 class="mb-0">Inventory & Sub-samples</h5>
+              {% if can_create_subsample %}
+                <button class="btn btn-sm btn-outline-primary" type="button">
+                  <i class="bi bi-plus-circle"></i> Create Sub-sample
+                </button>
+              {% endif %}
+            </div>
+            <div class="card-body">
+              <div class="table-responsive">
+                <table class="table table-sm align-middle">
+                  <thead class="table-light">
+                    <tr>
+                      <th scope="col">Fraction ID</th>
+                      <th scope="col">Storage Location</th>
+                      <th scope="col">Quantity</th>
+                      <th scope="col">Unit</th>
+                      <th scope="col">Status</th>
+                      <th scope="col" class="text-end">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <!-- Placeholder data - will be populated from database -->
+                    <tr>
+                      <td><span class="badge bg-light text-dark border">2-1mm</span></td>
+                      <td>Cold Storage · Rack A3 · Vial 1</td>
+                      <td>72.0</td>
+                      <td>g</td>
+                      <td><span class="badge bg-success">Available</span></td>
+                      <td class="text-end">
+                        {% if can_edit_sample %}
+                          <a class="link-primary me-3" href="#">Edit</a>
+                          <a class="link-danger" href="#">Remove</a>
+                        {% endif %}
+                      </td>
+                    </tr>
+                    <tr>
+                      <td><span class="badge bg-light text-dark border">1mm-63µm</span></td>
+                      <td>Cold Storage · Rack A3 · Vial 2</td>
+                      <td>238.0</td>
+                      <td>g</td>
+                      <td><span class="badge bg-success">Available</span></td>
+                      <td class="text-end">
+                        {% if can_edit_sample %}
+                          <a class="link-primary me-3" href="#">Edit</a>
+                          <a class="link-danger" href="#">Remove</a>
+                        {% endif %}
+                      </td>
+                    </tr>
+                    <tr>
+                      <td><span class="badge bg-light text-dark border">&lt;63µm</span></td>
+                      <td>Cold Storage · Rack A3 · Vial 3</td>
+                      <td>184.0</td>
+                      <td>g</td>
+                      <td><span class="badge bg-success">Available</span></td>
+                      <td class="text-end">
+                        {% if can_edit_sample %}
+                          <a class="link-primary me-3" href="#">Edit</a>
+                          <a class="link-danger" href="#">Remove</a>
+                        {% endif %}
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <div class="alert alert-info mb-0">
+                <i class="bi bi-info-circle me-2"></i>
+                <strong>Total:</strong> 494.0 g across 3 fractions
+              </div>
+            </div>
+          </div>
+
+          <!-- Disbursements Section -->
+          <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white border-0 d-flex justify-content-between align-items-center">
+              <h5 class="mb-0">Sample Disbursements</h5>
+              {% if can_edit_sample %}
+                <button class="btn btn-sm btn-outline-primary" type="button">
+                  <i class="bi bi-box-arrow-right"></i> Record Disbursement
+                </button>
+              {% endif %}
+            </div>
+            <div class="card-body">
+              <div class="table-responsive">
+                <table class="table table-sm align-middle">
+                  <thead class="table-light">
+                    <tr>
+                      <th scope="col">Date</th>
+                      <th scope="col">Recipient</th>
+                      <th scope="col">Institution</th>
+                      <th scope="col">Quantity</th>
+                      <th scope="col">Purpose</th>
+                      <th scope="col" class="text-end">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <!-- Placeholder data - will be populated from database -->
+                    <tr>
+                      <td colspan="6" class="text-center text-muted py-4">
+                        No disbursements recorded yet.
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <div class="alert alert-secondary mb-0">
+                <i class="bi bi-info-circle me-2"></i>
+                Record when sample material is sent to external researchers or labs.
+              </div>
+            </div>
+          </div>
         </div>
 
         <div class="tab-pane fade" id="physical-analysis" role="tabpanel" aria-labelledby="physical-analysis-tab">
@@ -407,7 +521,7 @@
                 <div id="collapse-micro-{{ key }}" class="accordion-collapse collapse {% if loop.first %}show{% endif %}" aria-labelledby="heading-micro-{{ key }}">
                   <div class="accordion-body">
                     <div class="d-flex justify-content-end gap-2 mb-3">
-                      <button class="btn btn-sm btn-outline-success" type="button"><i class="bi bi-cloud-upload"></i> Upload Image</button>
+                      <button class="btn btn-sm btn-outline-success" type="button"><i class="bi bi-cloud-upload"></i> Upload Files</button>
                       {% if can_manage_analysis %}
                         <button class="btn btn-sm btn-outline-primary" type="button"><i class="bi bi-arrow-repeat"></i> Replace</button>
                       {% endif %}
@@ -471,31 +585,37 @@
         </div>
 
         <div class="tab-pane fade" id="geochem" role="tabpanel" aria-labelledby="geochem-tab">
-          <div class="row g-3">
+          <!-- Collapsible Accordion for Geochemical Analysis (multiple sections can be open) -->
+          <div class="accordion" id="geochemAccordion">
             {% set geochem_sections = [
-              ('micro_xrf', 'Micro XRF'),
-              ('whole_xrf', 'Whole XRF'),
-              ('icp_ms', 'ICP-MS'),
               ('epma', 'EPMA / SEM'),
+              ('geochronology', 'Geochronology'),
+              ('icp_ms', 'ICP-MS'),
               ('la_icp_ms', 'LA-ICP-MS'),
+              ('micro_xrf', 'Micro XRF'),
               ('sims', 'SIMS'),
-              ('geochronology', 'Geochronology')
+              ('whole_xrf', 'Whole XRF')
             ] %}
             {% for key, label in geochem_sections %}
               {% set runs = geochem_data[key]|default([], true) %}
-              <div class="col-12">
-                <div class="card border-0 shadow-sm">
-                  <div class="card-header bg-white border-0 d-flex justify-content-between align-items-center">
-                    <h6 class="mb-0">{{ label }}</h6>
-                    <div class="btn-group btn-group-sm">
+              <div class="accordion-item">
+                <h2 class="accordion-header" id="heading-geochem-{{ key }}">
+                  <button class="accordion-button {% if not loop.first %}collapsed{% endif %}" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-geochem-{{ key }}" aria-expanded="{% if loop.first %}true{% else %}false{% endif %}" aria-controls="collapse-geochem-{{ key }}">
+                    <strong>{{ label }}</strong>
+                    {% if runs|length > 0 %}
+                      <span class="badge bg-success ms-2">{{ runs|length }} run(s)</span>
+                    {% endif %}
+                  </button>
+                </h2>
+                <div id="collapse-geochem-{{ key }}" class="accordion-collapse collapse {% if loop.first %}show{% endif %}" aria-labelledby="heading-geochem-{{ key }}">
+                  <div class="accordion-body">
+                    <div class="d-flex justify-content-end gap-2 mb-3">
                       {% if can_manage_analysis %}
-                        <button class="btn btn-outline-success" type="button"><i class="bi bi-plus-circle"></i> Add Run</button>
+                        <button class="btn btn-sm btn-outline-success" type="button"><i class="bi bi-plus-circle"></i> Add Run</button>
                       {% endif %}
-                      <button class="btn btn-outline-primary" type="button"><i class="bi bi-upload"></i> Import Template</button>
-                      <button class="btn btn-outline-secondary" type="button"><i class="bi bi-download"></i> Export Data</button>
+                      <button class="btn btn-sm btn-outline-primary" type="button"><i class="bi bi-upload"></i> Import Template</button>
+                      <button class="btn btn-sm btn-outline-secondary" type="button"><i class="bi bi-download"></i> Export Data</button>
                     </div>
-                  </div>
-                  <div class="card-body">
                     <div class="table-responsive">
                       <table class="table table-sm align-middle">
                         <thead class="table-light">
