@@ -1,7 +1,7 @@
 # Mock Login System (Development Only)
 
 **Status**: Development/Testing Only
-**Security**: ⚠️ **Remove before production deployment**
+**Security**:  ï¸ **Remove before production deployment**
 
 ## Overview
 
@@ -25,7 +25,7 @@ Direct login links for each role:
 - **View Only**: `http://localhost:5000/auth/quick-login/View_Only`
 
 ### Logout
-Click your username in the navigation bar → "Logout" or visit: `http://localhost:5000/auth/logout`
+Click your username in the navigation bar  "Logout" or visit: `http://localhost:5000/auth/logout`
 
 ---
 
@@ -33,12 +33,12 @@ Click your username in the navigation bar → "Logout" or visit: `http://localho
 
 | Permission             | Administrator | Project Owner | Collaborator | View & Export | View Only |
 |------------------------|:-------------:|:-------------:|:------------:|:-------------:|:---------:|
-| **Create Projects**    | ✅            | ✅            | ❌           | ❌            | ❌        |
-| **Edit Samples**       | ✅            | ✅            | ✅           | ❌            | ❌        |
-| **Manage Analysis**    | ✅            | ✅            | ✅           | ❌            | ❌        |
-| **Flag Samples**       | ✅            | ✅            | ✅           | ❌            | ❌        |
-| **Create Sub-samples** | ✅            | ✅            | ✅           | ❌            | ❌        |
-| **Export Data**        | ✅            | ✅            | ❌           | ✅            | ❌        |
+| **Create Projects**    |             | â            | â           | â            | â        |
+| **Edit Samples**       |             | â            | â           | â            | â        |
+| **Manage Analysis**    |             | â            | â           | â            | â        |
+| **Flag Samples**       |             | â            | â           | â            | â        |
+| **Create Sub-samples** |             | â            | â           | â            | â        |
+| **Export Data**        |             | â            | â           | â            | â        |
 
 ---
 
@@ -121,19 +121,19 @@ can_edit = user.get('can_edit_sample') and sample['status'] != 'archived'
 ## Testing Different Roles
 
 ### Test Scenario: Create Project
-1. **As View Only**: Login → No "Add Project" button visible ✅
-2. **As Collaborator**: Login → No "Add Project" button visible ✅
-3. **As Project Owner**: Login → "Add Project" button visible ✅
+1. **As View Only**: Login  No "Add Project" button visible â
+2. **As Collaborator**: Login  No "Add Project" button visible â
+3. **As Project Owner**: Login  "Add Project" button visible â
 
 ### Test Scenario: Edit Sample
-1. **As View Only**: Login → No edit buttons on sample page ✅
-2. **As View & Export**: Login → No edit buttons, "Export Data" visible ✅
-3. **As Collaborator**: Login → Edit buttons visible ✅
+1. **As View Only**: Login  No edit buttons on sample page â
+2. **As View & Export**: Login  No edit buttons, "Export Data" visible â
+3. **As Collaborator**: Login  Edit buttons visible â
 
 ### Test Scenario: Export Data
-1. **As View Only**: Login → No export button ✅
-2. **As Collaborator**: Login → No export button ✅
-3. **As View & Export**: Login → Export button visible ✅
+1. **As View Only**: Login  No export button â
+2. **As Collaborator**: Login  No export button â
+3. **As View & Export**: Login  Export button visible â
 
 ---
 
@@ -168,14 +168,14 @@ See `future_enhancements/sso_implementation_plan.md` for detailed migration guid
 
 ## Security Warnings
 
-⚠️ **This is NOT production-ready authentication:**
+ ï¸ **This is NOT production-ready authentication:**
 - No password verification
 - No protection against session hijacking
 - No user database (sessions clear on server restart)
 - No HTTPS enforcement
 - No rate limiting
 
-⚠️ **Before production deployment:**
+ ï¸ **Before production deployment:**
 - Remove all quick-login routes
 - Remove mock login form
 - Implement SSO/OIDC (see `future_enhancements/`)

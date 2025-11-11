@@ -1,4 +1,15 @@
+# Flask Core
 Flask==3.0.3
 Jinja2==3.1.4
 python-dotenv==1.1.1
 flask-wtf==1.2.0
+
+# Database
+psycopg2-binary==2.9.9      # PostgreSQL adapter for Python
+SQLAlchemy==2.0.23          # SQL toolkit and ORM
+Flask-SQLAlchemy==3.1.1     # SQLAlchemy integration for Flask
+GeoAlchemy2==0.14.2         # PostGIS support for SQLAlchemy
+
+# Security (future)
+# Flask-Login==0.6.3        # User session management
+# Flask-Bcrypt==1.0.1       # Password hashing
