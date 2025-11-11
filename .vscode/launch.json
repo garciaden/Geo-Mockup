@@ -3,19 +3,37 @@
   "configurations": [
     {
       "name": "Python: Flask",
-      "type": "debugpy",
+      "type": "python",
       "request": "launch",
       "module": "flask",
-      "args": [
-        "--app", "myapp.py",
-        "run",
-        "--host=0.0.0.0",
-        "--port=5000",
-        "--reload",
-        "--debug"
-      ],
+      "env": {
+        "FLASK_APP": "myapp.py",
+        "FLASK_ENV": "development",
+        "FLASK_DEBUG": "1"
+      },
+      "args": ["run", "--no-debugger", "--no-reload"],
       "jinja": true,
-      "envFile": "${workspaceFolder}/.env"
+      "justMyCode": true
+    },
+    {
+      "name": "Python: Flask (Direct)",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}/myapp.py",
+      "console": "integratedTerminal",
+      "justMyCode": true,
+      "env": {
+        "FLASK_ENV": "development",
+        "FLASK_DEBUG": "1"
+      }
+    },
+    {
+      "name": "Python: Current File",
+      "type": "python",
+      "request": "launch",
+      "program": "${file}",
+      "console": "integratedTerminal",
+      "justMyCode": true
     }
   ]
 }

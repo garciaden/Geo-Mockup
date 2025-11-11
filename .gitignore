@@ -2,11 +2,13 @@
 __pycache__/
 *.pyc
 *.pyo
+*.pyd
 
 # Virtual environments
 .venv/
 env/
 venv/
+ENV/
 
 # VSCode
 .vscode/
@@ -16,10 +18,44 @@ venv/
 .devcontainer/*log
 .devcontainer/*data
 
-# OS crap
+# OS files
 .DS_Store
 Thumbs.db
+*.swp
+*.swo
+*~
 
-# dotenv
+# Environment variables
 .env
 .env.*
+!example.env
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+postgres_data/
+pgdata/
+*.dump
+*.sql.backup
+pg_data/
+
+# Logs
+*.log
+logs/
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+*.cover
+
+# IDE
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Temporary files
+tmp/
+temp/
+*.tmp

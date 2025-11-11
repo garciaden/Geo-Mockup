@@ -15,42 +15,42 @@ This is a basic Flask web application that serves as a UI and workflow template 
 
 
 ```
-├── app/
-│   ├── __init__.py
-│   ├── main/
-│   │   ├── __init__.py
-│   │   ├── routes.py
-│   │   └── templates/
-│   │       └── main/
-│   ├── auth/
-│   │   ├── __init__.py
-│   │   ├── forms.py
-│   │   ├── routes.py
-│   │   └── templates/
-│   │       └── auth/
-│   ├── projects/
-│   │   ├── __init__.py
-│   │   ├── routes.py
-│   │   └── templates/
-│   │       └── projects/
-│   ├── samples/
-│   │   ├── __init__.py
-│   │   ├── routes.py
-│   │   └── templates/
-│   │       └── samples/
-│   ├── static/
-│   │   ├── favicon.png
-│   │   └── logo.png
-│   └── templates/
-│       ├── base.html
-│       └── _nav.html
-├── config.py
-├── myapp.py
-├── requirements.txt
-├── Dockerfile
-├── .devcontainer/
-├── .vscode/
-└── example.env
+ââ app/
+   âââ __init__.py
+   âââ main/
+   â   âââ __init__.py
+   â   âââ routes.py
+   â   âââ templates/
+   â       âââ main/
+   âââ auth/
+   â   âââ __init__.py
+   â   âââ forms.py
+   â   âââ routes.py
+   â   âââ templates/
+   â       âââ auth/
+   âââ projects/
+   â   âââ __init__.py
+   â   âââ routes.py
+   â   âââ templates/
+   â       âââ projects/
+   âââ samples/
+   â   âââ __init__.py
+   â   âââ routes.py
+   â   âââ templates/
+   â       âââ samples/
+   âââ static/
+   â   âââ favicon.png
+   â   âââ logo.png
+   âââ templates/
+       âââ base.html
+       âââ _nav.html
+ââ config.py
+ââ myapp.py
+ââ requirements.txt
+ââ Dockerfile
+ââ .devcontainer/
+ââ .vscode/
+ââ example.env
 ```
 
 - **app/**: Main application package (blueprints, templates, static files)
@@ -67,7 +67,7 @@ This is a basic Flask web application that serves as a UI and workflow template 
 
 > **For a complete and up-to-date guide on using Dev Containers in VS Code, including system requirements, installation, and troubleshooting, see the official documentation:**
 >
-> [VS Code Dev Containers Documentation — Getting Started, System Requirements, and Installation](https://code.visualstudio.com/docs/devcontainers/containers)
+> [VS Code Dev Containers Documentation  Getting Started, System Requirements, and Installation](https://code.visualstudio.com/docs/devcontainers/containers)
 
 #### 1. Visual Studio Code
 
@@ -129,7 +129,7 @@ If you have the Dev Containers extension installed:
 
 ## Customization
 
-- **Add routes:** In the appropriate blueprint’s `routes.py`.
+- **Add routes:** In the appropriate blueprints `routes.py`.
 - **Add templates:** Place in `app/templates/` for site-wide templates or the template folder inside of each blueprint subdiretory.
 - **Add static files:** Place in `app/static/`.
 - **Environment config:** Add a `.env` file for secrets and settings.
