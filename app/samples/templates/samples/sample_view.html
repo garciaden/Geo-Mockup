@@ -26,6 +26,9 @@
         </a>
       </li>
       <li class="breadcrumb-item">
+        <a href="{{ url_for('projects.project_list') }}">Projects</a>
+      </li>
+      <li class="breadcrumb-item">
         {% if project %}
           <a href="{{ url_for('projects.project_detail', project_id=project.id) }}">{{ project.title }}</a>
         {% else %}
