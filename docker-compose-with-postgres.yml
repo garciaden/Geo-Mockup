@@ -1,0 +1,62 @@
+version: "3.9"
+
+services:
+  # Flask app (existing)
+  labmanager:
+    build: .
+    container_name: labmanager
+    restart: unless-stopped
+    ports:
+      - "5847:8000"
+    networks:
+      - proxy-net
+      - backend
+    environment:
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_NAME=kuehnlab_db
+      - DB_USER=kuehnlab_user
+      - DB_PASSWORD=local_dev_pass
+    depends_on:
+      - postgres
+
+  # PostgreSQL database (new)
+  postgres:
+    image: postgis/postgis:15-3.3
+    container_name: kuehnlab_postgres
+    restart: unless-stopped
+    ports:
+      - "5432:5432"  # Expose to host (for Django on Windows)
+    networks:
+      - backend
+    environment:
+      - POSTGRES_DB=kuehnlab_db
+      - POSTGRES_USER=kuehnlab_user
+      - POSTGRES_PASSWORD=local_dev_pass
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  # pgAdmin (optional - web UI for PostgreSQL)
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: kuehnlab_pgadmin
+    restart: unless-stopped
+    ports:
+      - "5050:80"  # Access at http://localhost:5050
+    networks:
+      - backend
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=admin@kuehnlab.edu
+      - PGADMIN_DEFAULT_PASSWORD=admin
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+
+networks:
+  proxy-net:
+    external: true
+  backend:
+    driver: bridge
+
+volumes:
+  postgres_data:
+  pgadmin_data:
