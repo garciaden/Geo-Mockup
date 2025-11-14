@@ -422,7 +422,7 @@ def _slugify_name(name):
 
 def _default_email(name):
     slug = _slugify_name(name)
-    return f"{slug}@culs.example.edu"
+    return f"{slug}@kuehnlab.edu"
 
 
 def _relative_time(date_value):

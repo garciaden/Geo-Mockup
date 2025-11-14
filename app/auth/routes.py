@@ -95,7 +95,7 @@ def quick_login(role):
     user_data = {
         'Administrator': {
             'username': 'Admin User',
-            'email': 'admin@concord.edu',
+            'email': 'admin@kuehnlab.edu',
             'role': 'Administrator',
             'can_create_projects': True,
             'can_edit_sample': True,
@@ -106,7 +106,7 @@ def quick_login(role):
         },
         'Project_Owner': {
             'username': 'Project Owner',
-            'email': 'owner@concord.edu',
+            'email': 'owner@kuehnlab.edu',
             'role': 'Project_Owner',
             'can_create_projects': True,
             'can_edit_sample': True,
@@ -117,7 +117,7 @@ def quick_login(role):
         },
         'Collaborator': {
             'username': 'Collaborator',
-            'email': 'collaborator@concord.edu',
+            'email': 'collaborator@kuehnlab.edu',
             'role': 'Collaborator',
             'can_create_projects': False,
             'can_edit_sample': True,
@@ -128,7 +128,7 @@ def quick_login(role):
         },
         'View_Export': {
             'username': 'View Export User',
-            'email': 'viewer@concord.edu',
+            'email': 'viewer@kuehnlab.edu',
             'role': 'View_Export',
             'can_create_projects': False,
             'can_edit_sample': False,
@@ -139,7 +139,7 @@ def quick_login(role):
         },
         'View_Only': {
             'username': 'View Only User',
-            'email': 'readonly@concord.edu',
+            'email': 'readonly@kuehnlab.edu',
             'role': 'View_Only',
             'can_create_projects': False,
             'can_edit_sample': False,
