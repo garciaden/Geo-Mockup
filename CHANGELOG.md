@@ -1,5 +1,28 @@
 # Changelog
 
+## 11/13/25 - Final KuehnLab Branding
+
+### Branding Updates
+
+- Changed all branding to "KuehnLab" (singular, no space)
+- Updated email addresses to @kuehnlab.edu:
+  - app/auth/routes.py (all 5 mock user roles)
+  - app/auth/README_MOCK_LOGIN.md (documentation)
+  - app/samples/routes.py (_default_email function)
+- Updated header navigation to display "KuehnLab"
+- Removed all remaining references to:
+  - "Geology Lab Software"
+  - @concord.edu email addresses
+  - @culs.example.edu email addresses
+
+### Documentation Updates
+
+- Updated TODO.md for Django migration planning
+- Added Amazon Lightsail deployment focus
+- Added pgAdmin database management integration
+- Documented all 20 Django models from ENTITY-REFERENCE.md
+- Added Tailwind CSS + HTMX frontend migration plan
+
 ## 11/10/25 - Changes made by Matthew Kenner
 
 ### Homepage Updates
